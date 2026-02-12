@@ -197,7 +197,7 @@ function getBoosterState() {
   const key = 'ed_boosters_' + getTodayKey();
   const saved = localStorage.getItem(key);
   if (saved) return JSON.parse(saved);
-  return { question: false, tarjeta: false, tarjetaSpent: 0, compra: false, referral: false };
+  return { question: false, questionFailed: false, tarjeta: false, tarjetaSpent: 0, compra: false, referral: false };
 }
 
 function saveBoosterState(state) {

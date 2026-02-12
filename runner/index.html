@@ -353,6 +353,9 @@
       </div>
     </div>
     <div class="hud-multiplier" id="hudMultiplier"><span>x2 SPEED</span></div>
+    <div id="inflationAlert" style="position:fixed;top:45%;left:50%;transform:translate(-50%,-50%) scale(0.5);opacity:0;pointer-events:none;z-index:15;text-align:center;transition:none;">
+      <div id="inflationText" style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:36px;color:var(--brand);text-transform:uppercase;letter-spacing:2px;text-shadow:0 0 20px rgba(229,229,23,0.5),0 2px 4px rgba(0,0,0,0.8);white-space:nowrap;">&#x1F525; INFLACI&Oacute;N x2!!</div>
+    </div>
   </div>
 
   <!-- Welcome -->
@@ -464,6 +467,7 @@
     let buildings = [];
     let roadOffset = 0;
     let invincible = 0;
+    let lastSpeedLevel = 1;
 
     // Load best score from Supabase
     (async () => {
@@ -510,15 +514,28 @@
     // ========== OBSTACLES ==========
     function spawnObstacle() {
       const lane = Math.floor(Math.random() * 3);
-      const types = ['box', 'barrier', 'tall'];
+      const types = ['box', 'barrier', 'barrier', 'tall'];
       const type = types[Math.floor(Math.random() * types.length)];
-      obstacles.push({
-        lane,
-        z: 800 + Math.random() * 200,
-        type,
-        width: type === 'barrier' ? 1.8 : 0.7,
-        height: type === 'tall' ? 80 : type === 'barrier' ? 40 : 50,
-      });
+      if (type === 'barrier') {
+        // Barrier blocks 2 lanes, leaves 1 free
+        const freeLane = Math.random() < 0.5 ? 0 : 2;
+        obstacles.push({
+          lane: freeLane === 0 ? 1.5 : 0.5,  // center between blocked lanes
+          freeLane,
+          z: 800 + Math.random() * 200,
+          type: 'barrier',
+          width: 2.1,
+          height: 30,
+        });
+      } else {
+        obstacles.push({
+          lane,
+          z: 800 + Math.random() * 200,
+          type,
+          width: 0.7,
+          height: type === 'tall' ? 80 : 50,
+        });
+      }
     }
 
     function spawnCoin() {
@@ -578,9 +595,8 @@
       coinItems = [];
       particles = [];
       invincible = 0;
+      lastSpeedLevel = 1;
       roadOffset = 0;
-      initBuildings();
-
       // Initial spawns
       for (let i = 0; i < 3; i++) {
         spawnObstacle();
@@ -635,21 +651,14 @@
         }
       }
 
-      // Move buildings
-      for (const b of buildings) {
-        b.z -= speed * 0.7;
-        if (b.z < -200) {
-          b.z += 3000;
-          b.width = 40 + Math.random() * 60;
-          b.height = 80 + Math.random() * 180;
-        }
-      }
-
       // Collision detection
       const playerZ = 30;
       for (const obs of obstacles) {
         if (obs.z > playerZ - 20 && obs.z < playerZ + 30) {
-          if (obs.lane === playerLane || (obs.width > 1.5 && Math.abs(obs.lane - playerLane) <= 0)) {
+          const hit = obs.type === 'barrier'
+            ? playerLane !== obs.freeLane  // barriers block 2 lanes, 1 is free
+            : obs.lane === playerLane;
+          if (hit) {
             // Check jump
             if (obs.type !== 'tall' && playerJump > 30) continue;
             if (invincible > 0) continue;
@@ -700,11 +709,16 @@
       document.getElementById('hudScore').textContent = Math.floor(score).toLocaleString();
       document.getElementById('hudCoins').textContent = coins;
 
-      if (speed > 12) {
+      const currentLevel = Math.floor(speed / baseSpeed);
+      if (speed > 10) {
         document.getElementById('hudMultiplier').classList.add('visible');
-        document.getElementById('hudMultiplier').querySelector('span').textContent = `x${Math.floor(speed / baseSpeed)} SPEED`;
+        document.getElementById('hudMultiplier').querySelector('span').textContent = `\u{1F525} INFLACI\u{00D3}N x${currentLevel}!!`;
       } else {
         document.getElementById('hudMultiplier').classList.remove('visible');
+      }
+      if (currentLevel > lastSpeedLevel) {
+        lastSpeedLevel = currentLevel;
+        showInflationAlert(currentLevel);
       }
     }
 
@@ -750,9 +764,6 @@
 
       // Road with perspective
       drawRoad();
-
-      // Buildings (behind road)
-      drawBuildings();
 
       // Draw items sorted by Z (far to near)
       const allItems = [
@@ -883,6 +894,11 @@
       const ow = laneWidth * obs.width * scale;
       const oh = obs.height * scale;
 
+      if (obs.type === 'barrier') {
+        drawBank(sx, screenY, ow, scale);
+        return;
+      }
+
       // Shadow
       ctx.fillStyle = 'rgba(0,0,0,0.3)';
       ctx.fillRect(sx - ow / 2 + 3 * scale, screenY - 2 * scale, ow, 4 * scale);
@@ -901,14 +917,66 @@
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       roundRect(ctx, sx - ow / 2 + 2 * scale, screenY - oh + 2 * scale, ow * 0.3, oh * 0.4, r / 2);
       ctx.fill();
+    }
 
-      // Warning stripes
-      if (obs.type === 'barrier' && scale > 0.3) {
-        ctx.fillStyle = 'rgba(18,18,17,0.4)';
-        const stripeW = 6 * scale;
-        for (let s = 0; s < ow; s += stripeW * 2) {
-          ctx.fillRect(sx - ow / 2 + s, screenY - oh, stripeW, oh);
-        }
+    function drawBank(cx, baseY, totalW, scale) {
+      if (scale < 0.08) return;
+      const bh = 55 * scale;   // building height
+      const bw = totalW;
+      const x = cx - bw / 2;
+      const y = baseY - bh;
+      const roofH = 14 * scale;
+      const colW = Math.max(2, 5 * scale);
+      const colCount = Math.max(2, Math.round(bw / (14 * scale)));
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.fillRect(x + 3 * scale, baseY - 2 * scale, bw, 4 * scale);
+
+      // Main wall
+      ctx.fillStyle = '#3a3a38';
+      ctx.fillRect(x, y + roofH, bw, bh - roofH);
+
+      // Triangular roof (pediment)
+      ctx.fillStyle = '#4a4a47';
+      ctx.beginPath();
+      ctx.moveTo(x - 2 * scale, y + roofH);
+      ctx.lineTo(cx, y);
+      ctx.lineTo(x + bw + 2 * scale, y + roofH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Roof line
+      ctx.strokeStyle = '#5a5a57';
+      ctx.lineWidth = Math.max(1, 1.5 * scale);
+      ctx.beginPath();
+      ctx.moveTo(x - 2 * scale, y + roofH);
+      ctx.lineTo(cx, y);
+      ctx.lineTo(x + bw + 2 * scale, y + roofH);
+      ctx.stroke();
+
+      // Columns
+      ctx.fillStyle = '#5a5a57';
+      const spacing = bw / (colCount + 1);
+      for (let i = 1; i <= colCount; i++) {
+        const colX = x + spacing * i - colW / 2;
+        ctx.fillRect(colX, y + roofH + 2 * scale, colW, bh - roofH - 4 * scale);
+        // Column cap
+        ctx.fillRect(colX - 1 * scale, y + roofH + 1 * scale, colW + 2 * scale, 2 * scale);
+        ctx.fillRect(colX - 1 * scale, baseY - 3 * scale, colW + 2 * scale, 2 * scale);
+      }
+
+      // Base step
+      ctx.fillStyle = '#4a4a47';
+      ctx.fillRect(x - 1 * scale, baseY - 3 * scale, bw + 2 * scale, 3 * scale);
+
+      // "BANK" text
+      if (scale > 0.3) {
+        ctx.fillStyle = '#8a8a85';
+        ctx.font = `bold ${Math.max(6, Math.round(9 * scale))}px Archivo Narrow`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('BANK', cx, y + roofH / 2 + 1 * scale);
       }
     }
 
@@ -1104,6 +1172,25 @@
         vibrate(10);
       }
     });
+
+    function showInflationAlert(level) {
+      const el = document.getElementById('inflationAlert');
+      const txt = document.getElementById('inflationText');
+      txt.innerHTML = `\u{1F525} INFLACI\u{00D3}N x${level}!!`;
+      el.style.transition = 'none';
+      el.style.opacity = '0';
+      el.style.transform = 'translate(-50%,-50%) scale(0.6)';
+      void el.offsetWidth;
+      el.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
+      el.style.opacity = '1';
+      el.style.transform = 'translate(-50%,-50%) scale(1)';
+      vibrate([30, 50, 30]);
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.5s ease-in, transform 0.5s ease-in';
+        el.style.opacity = '0';
+        el.style.transform = 'translate(-50%,-50%) scale(1.1)';
+      }, 800);
+    }
 
     // ========== GAME STATE ==========
     function startGame() {

@@ -332,6 +332,18 @@ app.post('/api/boosters/complete', async (req, res) => {
   }
 });
 
+// --- Admin: Reset DB ---
+app.post('/api/admin/reset', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM scores');
+    await pool.query('DELETE FROM user_boosters');
+    await pool.query('UPDATE users SET total_games_played = 0');
+    res.json({ ok: true, message: 'Database reset: scores, boosters cleared, game counts reset.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ========== SPA FALLBACK ==========
 // Serve index.html for non-API routes that don't match a file
 app.get('*', (req, res) => {

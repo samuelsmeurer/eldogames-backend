@@ -1418,6 +1418,22 @@
     // 1. Pregunta del Dia
     if (state.question) {
       html += boosterCard('&#129504;', 'Pregunta del Dia', 'Respondiste correctamente!', true);
+    } else if (state.questionFailed) {
+      html += `<div style="background:var(--surface-primary);border:1px solid rgba(229,57,53,0.3);border-radius:12px;padding:16px;opacity:0.6;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:18px;">&#129504;</span>
+              <div style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:14px;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.28px;">Pregunta del Dia</div>
+              <span style="font-family:'Geist',sans-serif;font-size:11px;color:#e53935;font-weight:600;">&#10060;</span>
+            </div>
+            <div style="font-family:'Geist',sans-serif;font-size:12px;color:var(--text-secondary);margin-top:4px;">Respuesta incorrecta. Intenta ma&ntilde;ana!</div>
+          </div>
+          <div style="border:1px solid rgba(229,57,53,0.3);border-radius:8px;padding:4px 10px;white-space:nowrap;">
+            <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:11px;color:#e53935;">x1.1</span>
+          </div>
+        </div>
+      </div>`;
     } else {
       html += `<div style="background:var(--surface-primary);border:1px solid var(--stroke-secondary);border-radius:12px;padding:16px;">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
@@ -1486,6 +1502,10 @@
       buttons[question.answer].style.color = '#121211';
       buttons[question.answer].style.border = '1px solid #1fcc4b';
       buttons.forEach(b => b.disabled = true);
+      const state = SupabaseUtils.getBoosterState();
+      state.questionFailed = true;
+      SupabaseUtils.saveBoosterState(state);
+      setTimeout(() => { loadBoosters(); }, 1500);
     }
   }
 
