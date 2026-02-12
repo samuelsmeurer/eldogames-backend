@@ -195,7 +195,9 @@
       overflow-y: auto;
       padding: 24px 0;
       -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
+    .body-scroll::-webkit-scrollbar { display: none; }
 
     /* Balance */
     .balance-section {
@@ -886,8 +888,8 @@
       </div>
 
       <!-- Invitar (Outline + Sticker) -->
-      <div class="block-button outline" onclick="vibrate()">
-        <div class="sticker" style="position:relative;top:auto;right:auto;transform:rotate(30deg);margin-bottom:-8px;margin-left:20px;">
+      <div class="block-button outline" onclick="vibrate()" style="position:relative;">
+        <div style="position:absolute;top:-18px;right:-8px;width:72.915px;height:33.793px;transform:rotate(30deg);z-index:3;pointer-events:none;">
           <img src="https://www.figma.com/api/mcp/asset/cab5d60b-61bd-4dba-b70a-507fa8819635" alt="" style="width:115%;height:115%;position:absolute;inset:-7.5%;">
           <span class="sticker-text">gana hasta 1.000 USD</span>
         </div>
