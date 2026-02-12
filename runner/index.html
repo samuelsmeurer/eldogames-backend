@@ -410,7 +410,14 @@
     </div>
   </div>
 
+  <script src="/js/supabase-utils.js"></script>
   <script>
+    // ========== AUTH CHECK ==========
+    if (!SupabaseUtils.getCurrentUsername()) {
+      window.location.href = '/username.html';
+    }
+    const _username = SupabaseUtils.getCurrentUsername();
+
     // ========== CANVAS SETUP ==========
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
@@ -473,6 +480,17 @@
     let buildings = [];
     let roadOffset = 0;
     let invincible = 0;
+
+    // Load best score from Supabase
+    (async () => {
+      try {
+        const remoteBest = await SupabaseUtils.getBestScore(_username, 'crypto_runner');
+        if (remoteBest > bestScore) {
+          bestScore = remoteBest;
+          localStorage.setItem('cr_best', bestScore.toString());
+        }
+      } catch (e) { /* offline fallback */ }
+    })();
 
     // Lane positions (calculated in render)
     const LANE_COUNT = 3;
@@ -1127,6 +1145,11 @@
       document.getElementById('goCoins').textContent = coins;
       document.getElementById('goBest').textContent = bestScore.toLocaleString();
       document.getElementById('gameOverScreen').classList.remove('hidden');
+
+      // Submit score to Supabase
+      if (_username && finalScore > 0) {
+        SupabaseUtils.submitScore(_username, 'crypto_runner', finalScore, coins).catch(() => {});
+      }
     }
 
     function vibrate(ms) {

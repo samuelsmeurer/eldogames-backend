@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#121211">
+  <title>Elegir Username - El Dorado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #121211;
+      --surface: #1a1a19;
+      --surface-secondary: #2a2a28;
+      --text-primary: #fcfcfc;
+      --text-secondary: #b9b9b3;
+      --brand: #e5e517;
+      --brand-glow: rgba(229, 229, 23, 0.15);
+      --stroke-secondary: #2a2a28;
+      --danger: #e54017;
+      --success: #1fcc4b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Geist', -apple-system, sans-serif;
+      height: 100%;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 393px;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      background: var(--brand);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 40px rgba(229, 229, 23, 0.3);
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--bg);
+    }
+
+    .title {
+      font-family: 'Archivo Narrow', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+      max-width: 280px;
+    }
+
+    .subtitle strong { color: var(--brand); }
+
+    .input-wrapper {
+      width: 100%;
+      max-width: 320px;
+      position: relative;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Geist', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--brand);
+      pointer-events: none;
+    }
+
+    .username-input {
+      width: 100%;
+      background: var(--surface);
+      border: 2px solid var(--stroke-secondary);
+      border-radius: 12px;
+      padding: 16px 16px 16px 36px;
+      font-family: 'Geist', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .username-input::placeholder {
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .username-input:focus {
+      border-color: var(--brand);
+    }
+
+    .username-input.error {
+      border-color: var(--danger);
+    }
+
+    .username-input.success {
+      border-color: var(--success);
+    }
+
+    .status-msg {
+      width: 100%;
+      max-width: 320px;
+      min-height: 20px;
+      font-size: 12px;
+      text-align: center;
+      transition: color 0.2s;
+    }
+
+    .status-msg.error { color: var(--danger); }
+    .status-msg.success { color: var(--success); }
+    .status-msg.checking { color: var(--text-secondary); }
+
+    .btn {
+      width: 100%;
+      max-width: 320px;
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 10px;
+      padding: 16px 32px;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+      background: var(--brand);
+      color: var(--bg);
+    }
+
+    .btn:active { transform: scale(0.96); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .powered {
+      font-size: 11px;
+      color: var(--text-secondary);
+      opacity: 0.5;
+      letter-spacing: 1px;
+      font-family: 'Archivo Narrow', sans-serif;
+      margin-top: 16px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--text-secondary);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">ED</div>
+  <div class="title">Elige tu handle</div>
+  <div class="subtitle">
+    Crea un nombre unico para competir en el <strong>leaderboard</strong> y ganar recompensas crypto.
+  </div>
+
+  <div class="input-wrapper">
+    <span class="input-prefix">@</span>
+    <input
+      type="text"
+      class="username-input"
+      id="usernameInput"
+      placeholder="tu_nombre"
+      maxlength="20"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+    >
+  </div>
+
+  <div class="status-msg" id="statusMsg"></div>
+
+  <button class="btn" id="createBtn" disabled>CONTINUAR</button>
+
+  <div class="powered">POWERED BY EL DORADO</div>
+</div>
+
+<script src="/js/supabase-utils.js"></script>
+<script>
+  // Redirect if already has username
+  if (SupabaseUtils.getCurrentUsername()) {
+    window.location.href = '/index.html';
+  }
+
+  const input = document.getElementById('usernameInput');
+  const statusMsg = document.getElementById('statusMsg');
+  const createBtn = document.getElementById('createBtn');
+  const PATTERN = /^[a-zA-Z0-9_]{3,20}$/;
+
+  let debounceTimer = null;
+  let isAvailable = false;
+
+  input.addEventListener('input', () => {
+    const val = input.value.replace(/[^a-zA-Z0-9_]/g, '');
+    input.value = val;
+    isAvailable = false;
+    createBtn.disabled = true;
+
+    clearTimeout(debounceTimer);
+
+    if (val.length === 0) {
+      statusMsg.textContent = '';
+      statusMsg.className = 'status-msg';
+      input.className = 'username-input';
+      return;
+    }
+
+    if (val.length < 3) {
+      statusMsg.textContent = 'Minimo 3 caracteres';
+      statusMsg.className = 'status-msg error';
+      input.className = 'username-input error';
+      return;
+    }
+
+    if (!PATTERN.test(val)) {
+      statusMsg.textContent = 'Solo letras, numeros y _';
+      statusMsg.className = 'status-msg error';
+      input.className = 'username-input error';
+      return;
+    }
+
+    statusMsg.innerHTML = '<span class="spinner"></span> Verificando...';
+    statusMsg.className = 'status-msg checking';
+    input.className = 'username-input';
+
+    debounceTimer = setTimeout(async () => {
+      try {
+        const available = await SupabaseUtils.checkUsernameAvailable(val);
+        // Check input hasn't changed during the async check
+        if (input.value !== val) return;
+
+        if (available) {
+          statusMsg.textContent = '@' + val.toLowerCase() + ' esta disponible!';
+          statusMsg.className = 'status-msg success';
+          input.className = 'username-input success';
+          isAvailable = true;
+          createBtn.disabled = false;
+        } else {
+          statusMsg.textContent = '@' + val.toLowerCase() + ' ya esta en uso';
+          statusMsg.className = 'status-msg error';
+          input.className = 'username-input error';
+          isAvailable = false;
+          createBtn.disabled = true;
+        }
+      } catch (err) {
+        statusMsg.textContent = 'Error de conexion. Intenta de nuevo.';
+        statusMsg.className = 'status-msg error';
+      }
+    }, 500);
+  });
+
+  createBtn.addEventListener('click', async () => {
+    const val = input.value.trim();
+    if (!PATTERN.test(val) || !isAvailable) return;
+
+    createBtn.disabled = true;
+    createBtn.textContent = 'CREANDO...';
+
+    try {
+      const user = await SupabaseUtils.createUser(val);
+      if (user) {
+        window.location.href = '/index.html';
+      } else {
+        statusMsg.textContent = 'Error al crear usuario. Intenta otro nombre.';
+        statusMsg.className = 'status-msg error';
+        createBtn.textContent = 'CONTINUAR';
+        createBtn.disabled = false;
+      }
+    } catch (err) {
+      statusMsg.textContent = 'Error de conexion. Intenta de nuevo.';
+      statusMsg.className = 'status-msg error';
+      createBtn.textContent = 'CONTINUAR';
+      createBtn.disabled = false;
+    }
+  });
+
+  // Allow Enter to submit
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !createBtn.disabled) {
+      createBtn.click();
+    }
+  });
+</script>
+
+</body>
+</html>

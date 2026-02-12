@@ -830,7 +830,7 @@
       <img class="logo-text" src="https://www.figma.com/api/mcp/asset/4cf04516-e459-45bd-bb27-d68061e27dce" alt="el dorado">
     </div>
     <div class="avatar-section">
-      <span class="avatar-name">elexplorador</span>
+      <span class="avatar-name" id="avatarName">elexplorador</span>
       <div class="avatar-img">
         <div class="inner">
           <img src="https://www.figma.com/api/mcp/asset/9de523ac-9ce1-4f75-b890-58d833903cd6" alt="">
@@ -1189,35 +1189,27 @@
         </div>
       </div>
 
+      <!-- Boosters Button -->
+      <div style="margin-top:24px;">
+        <button id="boostersBtn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,rgba(229,229,23,0.15),rgba(229,229,23,0.05));border:1px solid rgba(229,229,23,0.3);border-radius:12px;padding:14px;cursor:pointer;font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--brand);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Boosters
+        </button>
+      </div>
+
       <!-- Leaderboard Preview -->
       <div style="margin-top:24px;">
-        <div style="font-family:'Geist',sans-serif;font-weight:500;font-size:16px;color:var(--text-primary);letter-spacing:0.32px;margin-bottom:12px;">Leaderboard - Hoy</div>
-        <div style="background:var(--surface-primary);border-radius:12px;overflow:hidden;border:1px solid var(--stroke-secondary);">
-          <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--stroke-secondary);">
-            <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:16px;color:var(--brand);width:32px;">1</span>
-            <span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--text-primary);flex:1;">crypto_king</span>
-            <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:14px;color:var(--brand);">12,450 pts</span>
-          </div>
-          <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--stroke-secondary);">
-            <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:16px;color:var(--text-primary);width:32px;">2</span>
-            <span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--text-primary);flex:1;">hodl_master</span>
-            <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:14px;color:var(--text-primary);">10,200 pts</span>
-          </div>
-          <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--stroke-secondary);">
-            <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:16px;color:var(--text-primary);width:32px;">3</span>
-            <span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--text-primary);flex:1;">defi_queen</span>
-            <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:14px;color:var(--text-primary);">8,750 pts</span>
-          </div>
-          <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--stroke-secondary);">
-            <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:16px;color:var(--text-secondary);width:32px;">4</span>
-            <span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--text-primary);flex:1;">nft_lover</span>
-            <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:14px;color:var(--text-primary);">7,100 pts</span>
-          </div>
-          <div style="display:flex;align-items:center;padding:12px 16px;">
-            <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:16px;color:var(--text-secondary);width:32px;">5</span>
-            <span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--text-primary);flex:1;">satoshi_fan</span>
-            <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:14px;color:var(--text-primary);">5,800 pts</span>
-          </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div style="font-family:'Geist',sans-serif;font-weight:500;font-size:16px;color:var(--text-primary);letter-spacing:0.32px;">Leaderboard - Hoy</div>
+        </div>
+        <!-- Filter Tabs -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;" id="leaderboardFilters">
+          <button class="lb-filter active" data-filter="all" style="background:var(--brand);color:#121211;border:none;border-radius:20px;padding:6px 14px;font-family:'Geist',sans-serif;font-weight:600;font-size:12px;cursor:pointer;">Todos</button>
+          <button class="lb-filter" data-filter="block_blast" style="background:var(--surface-secondary);color:var(--text-secondary);border:1px solid var(--stroke-secondary);border-radius:20px;padding:6px 14px;font-family:'Geist',sans-serif;font-weight:600;font-size:12px;cursor:pointer;">Block Blast</button>
+          <button class="lb-filter" data-filter="crypto_runner" style="background:var(--surface-secondary);color:var(--text-secondary);border:1px solid var(--stroke-secondary);border-radius:20px;padding:6px 14px;font-family:'Geist',sans-serif;font-weight:600;font-size:12px;cursor:pointer;">Crypto Runner</button>
+        </div>
+        <div id="leaderboardList" style="background:var(--surface-primary);border-radius:12px;overflow:hidden;border:1px solid var(--stroke-secondary);">
+          <div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">Cargando leaderboard...</div>
         </div>
       </div>
 
@@ -1226,7 +1218,47 @@
   </div>
 </div>
 
+<!-- Boosters Modal -->
+<div id="boostersModal" style="display:none;position:fixed;inset:0;z-index:110;background:rgba(18,18,17,0.95);backdrop-filter:blur(8px);">
+  <div style="width:100%;max-width:393px;height:100%;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;">
+    <div style="padding:env(safe-area-inset-top,47px) 16px 0;min-height:calc(47px + 64px);">
+      <div style="height:47px;"></div>
+      <div style="height:64px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button onclick="closeBoosters()" style="background:none;border:none;color:var(--text-primary);font-size:24px;cursor:pointer;padding:8px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:20px;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.4px;">Boosters</span>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e5e517" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;">
+      <div style="background:linear-gradient(135deg,rgba(229,229,23,0.15),rgba(229,229,23,0.05));border:1px solid rgba(229,229,23,0.2);border-radius:12px;padding:16px;margin-bottom:20px;">
+        <div style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:14px;text-transform:uppercase;color:var(--brand);letter-spacing:0.28px;">Completa tareas, gana recompensas</div>
+        <div style="font-family:'Geist',sans-serif;font-size:12px;color:var(--text-secondary);margin-top:4px;">Cada booster completado te da puntos extra o multiplicadores.</div>
+      </div>
+      <div id="boostersList" style="display:flex;flex-direction:column;gap:12px;">
+        <div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">Cargando boosters...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/supabase-utils.js"></script>
 <script>
+  // ========== AUTH CHECK ==========
+  if (!SupabaseUtils.getCurrentUsername()) {
+    window.location.href = '/username.html';
+  }
+
+  // ========== SHOW USERNAME ==========
+  const username = SupabaseUtils.getCurrentUsername();
+  if (username) {
+    document.getElementById('avatarName').textContent = '@' + username;
+  }
+
+  // ========== BASIC FUNCTIONS ==========
   function vibrate() {
     if (navigator.vibrate) navigator.vibrate(10);
   }
@@ -1235,6 +1267,7 @@
     vibrate();
     document.getElementById('gamesModal').style.display = 'block';
     document.getElementById('gamesModal').style.animation = 'slideUp 0.3s ease-out';
+    loadLeaderboard('all');
   }
 
   function closeGames() {
@@ -1244,7 +1277,135 @@
     setTimeout(() => { modal.style.display = 'none'; }, 280);
   }
 
-  // Add slide animations
+  // ========== LEADERBOARD ==========
+  let currentFilter = 'all';
+
+  async function loadLeaderboard(filter) {
+    currentFilter = filter;
+    const container = document.getElementById('leaderboardList');
+    container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">Cargando...</div>';
+
+    // Update filter buttons
+    document.querySelectorAll('.lb-filter').forEach(btn => {
+      if (btn.dataset.filter === filter) {
+        btn.style.background = 'var(--brand)';
+        btn.style.color = '#121211';
+        btn.style.border = 'none';
+        btn.classList.add('active');
+      } else {
+        btn.style.background = 'var(--surface-secondary)';
+        btn.style.color = 'var(--text-secondary)';
+        btn.style.border = '1px solid var(--stroke-secondary)';
+        btn.classList.remove('active');
+      }
+    });
+
+    try {
+      const data = await SupabaseUtils.getDailyLeaderboard(filter === 'all' ? null : filter, 10);
+      renderLeaderboard(data);
+    } catch (err) {
+      container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">Error al cargar leaderboard</div>';
+    }
+  }
+
+  function renderLeaderboard(data) {
+    const container = document.getElementById('leaderboardList');
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">Nadie ha jugado hoy. Se el primero!</div>';
+      return;
+    }
+
+    container.innerHTML = data.map((entry, i) => {
+      const isTop3 = i < 3;
+      const rankColor = i === 0 ? 'var(--brand)' : isTop3 ? 'var(--text-primary)' : 'var(--text-secondary)';
+      const scoreColor = i === 0 ? 'var(--brand)' : 'var(--text-primary)';
+      const isMe = entry.username === username;
+      const border = i < data.length - 1 ? 'border-bottom:1px solid var(--stroke-secondary);' : '';
+      const highlight = isMe ? 'background:rgba(229,229,23,0.05);' : '';
+      const gameLabel = entry.game_type === 'block_blast' ? 'BB' : 'CR';
+      return `<div style="display:flex;align-items:center;padding:12px 16px;${border}${highlight}">
+        <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:16px;color:${rankColor};width:32px;">${i + 1}</span>
+        <div style="flex:1;min-width:0;">
+          <span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--text-primary);${isMe ? 'font-weight:600;' : ''}">${isMe ? '@' : ''}${entry.username}</span>
+          ${currentFilter === 'all' ? `<span style="font-family:'Geist',sans-serif;font-size:10px;color:var(--text-secondary);margin-left:6px;background:var(--surface-secondary);padding:1px 6px;border-radius:4px;">${gameLabel}</span>` : ''}
+        </div>
+        <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:14px;color:${scoreColor};">${entry.score.toLocaleString()} pts</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Filter click handlers
+  document.getElementById('leaderboardFilters').addEventListener('click', (e) => {
+    const btn = e.target.closest('.lb-filter');
+    if (btn) loadLeaderboard(btn.dataset.filter);
+  });
+
+  // ========== BOOSTERS ==========
+  function openBoosters() {
+    vibrate();
+    document.getElementById('boostersModal').style.display = 'block';
+    loadBoosters();
+  }
+
+  function closeBoosters() {
+    vibrate();
+    document.getElementById('boostersModal').style.display = 'none';
+  }
+
+  document.getElementById('boostersBtn').addEventListener('click', openBoosters);
+
+  async function loadBoosters() {
+    const container = document.getElementById('boostersList');
+    container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">Cargando...</div>';
+
+    try {
+      const [boosters, progress] = await Promise.all([
+        SupabaseUtils.getAvailableBoosters(),
+        SupabaseUtils.checkBoosterProgress(username),
+      ]);
+
+      if (!boosters || boosters.length === 0) {
+        container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">No hay boosters disponibles</div>';
+        return;
+      }
+
+      container.innerHTML = boosters.map(b => {
+        const p = progress[b.task_type] || { current: 0, target: 1, done: false };
+        const pct = Math.min(100, Math.round((p.current / p.target) * 100));
+        const rewardLabel = b.reward_type === 'multiplier' ? `x${b.reward_value} multiplicador` : `+${b.reward_value} pts`;
+        const doneStyle = p.done ? 'opacity:0.6;' : '';
+        const checkmark = p.done ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1fcc4b" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>' : '';
+
+        return `<div style="background:var(--surface-primary);border:1px solid var(--stroke-secondary);border-radius:12px;padding:16px;${doneStyle}">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:14px;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.28px;">${b.title}</div>
+                ${checkmark}
+              </div>
+              <div style="font-family:'Geist',sans-serif;font-size:12px;color:var(--text-secondary);margin-top:4px;">${b.description}</div>
+            </div>
+            <div style="background:var(--brand-glow);border:1px solid rgba(229,229,23,0.3);border-radius:8px;padding:4px 10px;white-space:nowrap;">
+              <span style="font-family:'Geist',sans-serif;font-weight:600;font-size:11px;color:var(--brand);">${rewardLabel}</span>
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-family:'Geist',sans-serif;font-size:11px;color:var(--text-secondary);">${p.current}/${p.target}</span>
+              <span style="font-family:'Geist',sans-serif;font-size:11px;color:var(--text-secondary);">${pct}%</span>
+            </div>
+            <div style="height:4px;background:var(--surface-secondary);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:${p.done ? '#1fcc4b' : 'var(--brand)'};border-radius:2px;transition:width 0.3s;"></div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    } catch (err) {
+      container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);font-size:13px;">Error al cargar boosters</div>';
+    }
+  }
+
+  // ========== ANIMATIONS ==========
   const style = document.createElement('style');
   style.textContent = `
     @keyframes slideUp {

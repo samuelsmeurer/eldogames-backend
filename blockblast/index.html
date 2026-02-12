@@ -659,7 +659,14 @@
     </div>
   </div>
 
+  <script src="/js/supabase-utils.js"></script>
   <script>
+    // ========== AUTH CHECK ==========
+    if (!SupabaseUtils.getCurrentUsername()) {
+      window.location.href = '/username.html';
+    }
+    const _username = SupabaseUtils.getCurrentUsername();
+
     // ========== GAME CONFIG ==========
     const GRID_SIZE = 8;
     let grid = [];
@@ -672,6 +679,18 @@
     let dragOffsetY = 0;
     let gridRect = null;
     let cellSize = 0;
+
+    // Load best score from Supabase
+    (async () => {
+      try {
+        const remoteBest = await SupabaseUtils.getBestScore(_username, 'block_blast');
+        if (remoteBest > bestScore) {
+          bestScore = remoteBest;
+          localStorage.setItem('bb_best', bestScore.toString());
+          document.getElementById('bestScore').textContent = bestScore.toLocaleString();
+        }
+      } catch (e) { /* offline fallback */ }
+    })();
 
     // ========== PIECES ==========
     const PIECES = [
@@ -1031,6 +1050,11 @@
       document.getElementById('finalScore').textContent = score.toLocaleString();
       document.getElementById('finalBest').textContent = bestScore.toLocaleString();
       document.getElementById('gameOverOverlay').classList.add('visible');
+
+      // Submit score to Supabase
+      if (_username && score > 0) {
+        SupabaseUtils.submitScore(_username, 'block_blast', score).catch(() => {});
+      }
     }
 
     // ========== EVENTS ==========
