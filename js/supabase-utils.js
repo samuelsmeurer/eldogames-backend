@@ -19,12 +19,8 @@ async function api(path, options) {
 // ========== USER FUNCTIONS ==========
 
 async function checkUsernameAvailable(username) {
-  try {
-    const data = await api('/users/check/' + encodeURIComponent(username.toLowerCase()));
-    return data.available;
-  } catch (e) {
-    return false;
-  }
+  const data = await api('/users/check/' + encodeURIComponent(username.toLowerCase()));
+  return data.available;
 }
 
 async function createUser(username) {
