@@ -168,7 +168,7 @@ async function completeBooster(boosterId) {
 
 const DAILY_QUESTIONS = [
   { q: 'Cual es la stablecoin mas utilizada del mundo?', options: ['USDT', 'USDC', 'DAI', 'BUSD'], answer: 0 },
-  { q: 'Quien creo Bitcoin?', options: ['Vitalik Buterin', 'Satoshi Nakamoto', 'Charles Hoskinson', 'Elon Musk'], answer: 1 },
+  { q: 'Si estoy comprando USDT de una orden en El Dorado, yo soy un:', options: ['Maker', 'Taker', 'Trader', 'Holder'], answer: 1 },
   { q: 'Que significa "HODL" en cripto?', options: ['Vender rapido', 'Mantener a largo plazo', 'Comprar mas', 'Hacer trading'], answer: 1 },
   { q: 'En que ano se creo Bitcoin?', options: ['2007', '2009', '2011', '2013'], answer: 1 },
   { q: 'Que blockchain usa El Dorado para transferencias?', options: ['Bitcoin', 'Ethereum', 'Tron', 'Varias redes'], answer: 3 },
