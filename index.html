@@ -437,17 +437,18 @@
     }
     .banner-subtitle {
       position: absolute;
-      bottom: 0;
+      bottom: 4px;
       left: 0;
       padding: var(--spacing-025) var(--spacing-15);
       width: 176px;
       overflow: hidden;
+      max-height: 30px;
     }
     .banner-subtitle p {
       font-family: 'Geist', sans-serif;
       font-weight: 700;
       font-size: 8px;
-      line-height: 15.44px;
+      line-height: 10px;
       color: var(--text-invert);
     }
     .banner-image {
@@ -925,7 +926,7 @@
 
         <!-- Subtitle -->
         <div class="banner-subtitle">
-          <p>Esta imagen no es real, Benjamin Franklin no se preocupaba ya que el usaba ACH y wire</p>
+          <p style="overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">Esta imagen no es real, Benjamin Franklin no se preocupaba ya que el usaba ACH y wire</p>
         </div>
       </div>
     </div>
@@ -1049,13 +1050,6 @@
         </div>
       </div>
 
-      <!-- View all button -->
-      <div style="display:flex;justify-content:center;padding:var(--spacing-2) 0;">
-        <button class="historial-btn">
-          <span>Title button</span>
-          <img src="https://www.figma.com/api/mcp/asset/711aa030-8558-4f83-933a-f0323b368922" alt="">
-        </button>
-      </div>
     </div>
 
     <!-- Blogs / Novedades -->
