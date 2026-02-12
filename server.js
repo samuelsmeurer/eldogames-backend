@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
@@ -211,6 +212,46 @@ app.get('/api/leaderboard/global', async (req, res) => {
     );
 
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// User position in daily leaderboard
+app.get('/api/leaderboard/daily/position/:username', async (req, res) => {
+  try {
+    const { game_type } = req.query;
+    const username = req.params.username.toLowerCase();
+
+    let query, params;
+    if (game_type && game_type !== 'all') {
+      query = `
+        SELECT DISTINCT ON (username) username, score, game_type
+        FROM scores
+        WHERE date = CURRENT_DATE AND game_type = $1
+        ORDER BY username, score DESC
+      `;
+      params = [game_type];
+    } else {
+      query = `
+        SELECT DISTINCT ON (username) username, score, game_type
+        FROM scores
+        WHERE date = CURRENT_DATE
+        ORDER BY username, score DESC
+      `;
+      params = [];
+    }
+
+    const result = await pool.query(
+      `SELECT *, ROW_NUMBER() OVER (ORDER BY score DESC) as rank FROM (${query}) sub`,
+      params
+    );
+
+    const userRow = result.rows.find(r => r.username === username);
+    if (!userRow) {
+      return res.json({ rank: null, score: 0, username });
+    }
+    res.json({ rank: parseInt(userRow.rank), score: userRow.score, game_type: userRow.game_type, username });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

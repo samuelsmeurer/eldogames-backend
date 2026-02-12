@@ -102,6 +102,16 @@ async function getDailyLeaderboard(gameType, limit) {
   }
 }
 
+async function getDailyPosition(username, gameType) {
+  try {
+    let url = '/leaderboard/daily/position/' + encodeURIComponent(username.toLowerCase());
+    if (gameType && gameType !== 'all') url += '?game_type=' + encodeURIComponent(gameType);
+    return await api(url);
+  } catch (e) {
+    return { rank: null, score: 0, username };
+  }
+}
+
 async function getGlobalLeaderboard(gameType, limit) {
   try {
     let url = '/leaderboard/global?limit=' + (limit || 50);
@@ -154,6 +164,80 @@ async function completeBooster(boosterId) {
   }
 }
 
+// ========== MULTIPLIER BOOSTERS ==========
+
+const DAILY_QUESTIONS = [
+  { q: 'Cual es la stablecoin mas utilizada del mundo?', options: ['USDT', 'USDC', 'DAI', 'BUSD'], answer: 0 },
+  { q: 'Quien creo Bitcoin?', options: ['Vitalik Buterin', 'Satoshi Nakamoto', 'Charles Hoskinson', 'Elon Musk'], answer: 1 },
+  { q: 'Que significa "HODL" en cripto?', options: ['Vender rapido', 'Mantener a largo plazo', 'Comprar mas', 'Hacer trading'], answer: 1 },
+  { q: 'En que ano se creo Bitcoin?', options: ['2007', '2009', '2011', '2013'], answer: 1 },
+  { q: 'Que blockchain usa El Dorado para transferencias?', options: ['Bitcoin', 'Ethereum', 'Tron', 'Varias redes'], answer: 3 },
+  { q: 'Que es una wallet en cripto?', options: ['Un exchange', 'Una billetera digital', 'Un token', 'Un banco'], answer: 1 },
+  { q: 'Cual es el simbolo de Ethereum?', options: ['BTC', 'ETH', 'XRP', 'SOL'], answer: 1 },
+  { q: 'Que significa P2P?', options: ['Pay to Play', 'Peer to Peer', 'Point to Point', 'Price to Price'], answer: 1 },
+  { q: 'Que es KYC?', options: ['Una criptomoneda', 'Verificacion de identidad', 'Un tipo de wallet', 'Un exchange'], answer: 1 },
+  { q: 'Cuantos Bitcoin existiran como maximo?', options: ['10 millones', '21 millones', '100 millones', 'Infinitos'], answer: 1 },
+  { q: 'Que es un NFT?', options: ['Una moneda', 'Un token no fungible', 'Un exchange', 'Una blockchain'], answer: 1 },
+  { q: 'Que red es conocida por sus bajas comisiones?', options: ['Bitcoin', 'Ethereum', 'Tron', 'Ninguna'], answer: 2 },
+  { q: 'Que es DeFi?', options: ['Finanzas descentralizadas', 'Un token', 'Un banco digital', 'Una app'], answer: 0 },
+  { q: 'Que significa "gas" en Ethereum?', options: ['Combustible', 'Comision de transaccion', 'Un token', 'Velocidad'], answer: 1 },
+];
+
+function getTodayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+}
+
+function getDailyQuestion() {
+  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  return DAILY_QUESTIONS[dayOfYear % DAILY_QUESTIONS.length];
+}
+
+function getBoosterState() {
+  const key = 'ed_boosters_' + getTodayKey();
+  const saved = localStorage.getItem(key);
+  if (saved) return JSON.parse(saved);
+  return { question: false, tarjeta: false, tarjetaSpent: 0, compra: false, referral: false };
+}
+
+function saveBoosterState(state) {
+  const key = 'ed_boosters_' + getTodayKey();
+  localStorage.setItem(key, JSON.stringify(state));
+}
+
+function completeBoosterTask(task) {
+  const state = getBoosterState();
+  state[task] = true;
+  saveBoosterState(state);
+}
+
+function addTarjetaSpending(amount) {
+  const state = getBoosterState();
+  state.tarjetaSpent = (state.tarjetaSpent || 0) + amount;
+  if (state.tarjetaSpent >= 10) state.tarjeta = true;
+  saveBoosterState(state);
+}
+
+function getMultiplier() {
+  const state = getBoosterState();
+  let m = 1.0;
+  if (state.question) m *= 1.1;
+  if (state.tarjeta) m *= 1.1;
+  if (state.compra) m *= 1.1;
+  if (state.referral) m *= 1.1;
+  return parseFloat(m.toFixed(4));
+}
+
+function getActiveBoosterCount() {
+  const state = getBoosterState();
+  let count = 0;
+  if (state.question) count++;
+  if (state.tarjeta) count++;
+  if (state.compra) count++;
+  if (state.referral) count++;
+  return count;
+}
+
 // ========== EXPORT ==========
 window.SupabaseUtils = {
   checkUsernameAvailable,
@@ -165,9 +249,17 @@ window.SupabaseUtils = {
   submitScore,
   getBestScore,
   getDailyLeaderboard,
+  getDailyPosition,
   getGlobalLeaderboard,
   getAvailableBoosters,
   getUserBoosters,
   checkBoosterProgress,
   completeBooster,
+  getDailyQuestion,
+  getBoosterState,
+  saveBoosterState,
+  completeBoosterTask,
+  addTarjetaSpending,
+  getMultiplier,
+  getActiveBoosterCount,
 };

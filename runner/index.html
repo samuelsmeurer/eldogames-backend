@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#121211">
-  <title>Crypto Runner - El Dorado</title>
+  <title>Dorado Run - El Dorado</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -48,6 +48,7 @@
       width: 100%;
       height: 100%;
       max-width: 430px;
+      margin: 0 auto;
     }
 
     /* ========== HUD OVERLAY ========== */
@@ -155,7 +156,7 @@
       padding: 40px;
     }
 
-    .screen-overlay.hidden { opacity: 0; pointer-events: none; }
+    .screen-overlay.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
 
     .welcome-bg {
       background: var(--bg);
@@ -293,30 +294,17 @@
       max-width: 90vw;
     }
 
-    .go-emoji { font-size: 48px; }
+    .go-emoji { font-size: 32px; }
     .go-score { font-size: 56px; font-weight: 700; color: var(--brand); line-height: 1; }
-    .go-stats { display: flex; gap: 24px; }
-
-    .go-stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .go-stat-label {
-      font-size: 10px;
-      color: var(--text-secondary);
-      font-family: 'Archivo Narrow', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-    }
-
-    .go-stat-value {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
+    .go-top3 { width: 100%; }
+    .go-top3-label { font-size: 10px; color: var(--text-secondary); font-family: 'Archivo Narrow', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; margin-bottom: 8px; }
+    .go-top3-list { display: flex; flex-direction: column; gap: 4px; }
+    .go-top3-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid transparent; }
+    .go-top3-row.me { background: rgba(229,229,23,0.1); border-color: rgba(229,229,23,0.25); }
+    .go-top3-rank { font-size: 16px; width: 24px; text-align: center; flex-shrink: 0; }
+    .go-top3-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-primary); font-family: 'Geist', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .go-top3-pts { font-size: 13px; font-weight: 700; color: var(--text-secondary); font-family: 'Archivo Narrow', sans-serif; flex-shrink: 0; }
+    .go-top3-row.me .go-top3-name, .go-top3-row.me .go-top3-pts { color: var(--brand); }
 
     .go-reward {
       display: flex;
@@ -342,6 +330,11 @@
     }
 
     .go-buttons .btn { width: 100%; padding: 14px; font-size: 15px; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -364,15 +357,11 @@
 
   <!-- Welcome -->
   <div class="screen-overlay welcome-bg" id="welcomeScreen">
+    <a href="/" class="back-arrow" style="position:absolute;top:16px;left:16px;color:var(--text-secondary);font-size:24px;text-decoration:none;z-index:25;padding:8px;">&#x2190;</a>
     <div class="welcome-logo">ED</div>
-    <div class="screen-title">Crypto Runner</div>
+    <div class="screen-title">Dorado Run</div>
     <div class="screen-subtitle">
-      Corre, esquiva obstaculos y recolecta <strong>monedas cripto</strong>. Compite por el Top 5 diario!
-    </div>
-    <div class="crypto-chips">
-      <div class="crypto-chip"><span class="dot dot-usdt"></span> USDT</div>
-      <div class="crypto-chip"><span class="dot dot-btc"></span> BTC</div>
-      <div class="crypto-chip"><span class="dot dot-eth"></span> ETH</div>
+      Corre, esquiva, haz la mayor puntuaci&oacute;n posible en el d&iacute;a para quedar en el <strong>Top 5</strong>!
     </div>
     <div class="controls-hint">
       <div class="hint"><div class="hint-icon">&#x2B05;</div>IZQUIERDA</div>
@@ -385,27 +374,22 @@
 
   <!-- Game Over -->
   <div class="screen-overlay gameover-bg hidden" id="gameOverScreen">
-    <div class="go-card">
+    <a href="/" class="back-arrow" style="position:absolute;top:16px;left:16px;color:var(--text-secondary);font-size:24px;text-decoration:none;z-index:25;padding:8px;">&#x2190;</a>
+    <div class="go-card" id="goCard">
       <div class="go-emoji">&#x1F4A5;</div>
       <div class="screen-title" style="font-size: 24px;">Juego Terminado</div>
-      <div class="go-score" id="goScore">0</div>
-      <div class="go-stats">
-        <div class="go-stat">
-          <span class="go-stat-label">Monedas</span>
-          <span class="go-stat-value" id="goCoins">0</span>
-        </div>
-        <div class="go-stat">
-          <span class="go-stat-label">Mejor</span>
-          <span class="go-stat-value" id="goBest">0</span>
-        </div>
+      <div class="go-score" id="goScore" style="color:var(--brand);">0</div>
+      <div id="multiplierAnimation" style="display:none;text-align:center;margin:12px 0;">
+        <div id="boosterReasons" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        <div id="multipliedScore" style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:56px;color:#1fcc4b;text-shadow:0 0 20px rgba(31,204,75,0.4);"></div>
       </div>
-      <div class="go-reward">
-        <span>&#x1FA99;</span>
-        Sigue jugando para el <strong>Top 5</strong> y ganar cripto!
+      <div class="go-top3" id="goTop3">
+        <div class="go-top3-label">RANKING DEL D&Iacute;A</div>
+        <div class="go-top3-list" id="goTop3List"></div>
       </div>
       <div class="go-buttons">
         <button class="btn btn-primary" id="retryBtn">JUGAR DE NUEVO</button>
-        <button class="btn btn-secondary" id="shareBtn">COMPARTIR</button>
+        <button class="btn btn-secondary" id="shareBtn">COMPARTE TU PUNTAJE CON AMIGOS</button>
       </div>
     </div>
   </div>
@@ -500,7 +484,7 @@
     let roadWidth = 0;
 
     // Perspective
-    const HORIZON_Y = 0.32; // horizon at 32% from top
+    const HORIZON_Y = 0.18; // horizon at 18% from top
     const PLAYER_Y = 0.78; // player at 78% from top
 
     function getLaneX(lane) {
@@ -1126,6 +1110,8 @@
       document.getElementById('welcomeScreen').classList.add('hidden');
       document.getElementById('gameOverScreen').classList.add('hidden');
       document.getElementById('hud').classList.add('active');
+      document.getElementById('hudScore').textContent = '0';
+      document.getElementById('hudCoins').textContent = '0';
       state = 'playing';
       initGame();
     }
@@ -1134,19 +1120,89 @@
       state = 'gameover';
       vibrate([50, 100, 50]);
 
-      const finalScore = Math.floor(score);
+      const rawScore = Math.floor(score);
+      const multiplier = SupabaseUtils.getMultiplier();
+      const finalScore = Math.round(rawScore * multiplier);
+
       if (finalScore > bestScore) {
         bestScore = finalScore;
         localStorage.setItem('cr_best', bestScore.toString());
       }
 
       document.getElementById('hud').classList.remove('active');
-      document.getElementById('goScore').textContent = finalScore.toLocaleString();
-      document.getElementById('goCoins').textContent = coins;
-      document.getElementById('goBest').textContent = bestScore.toLocaleString();
+      document.getElementById('goScore').textContent = rawScore.toLocaleString();
+      document.getElementById('multiplierAnimation').style.display = 'none';
+      document.getElementById('multipliedScore').textContent = '';
+      document.getElementById('boosterReasons').innerHTML = '';
+      document.getElementById('shareBtn').textContent = SHARE_BTN_TEXT;
       document.getElementById('gameOverScreen').classList.remove('hidden');
 
-      // Submit score to Supabase
+      // Fetch top 3 leaderboard
+      const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
+      const listEl = document.getElementById('goTop3List');
+      listEl.innerHTML = [0,1,2].map(i => `<div class="go-top3-row" style="opacity:0.4;"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">---</span><span class="go-top3-pts">-</span></div>`).join('');
+      Promise.all([
+        SupabaseUtils.getDailyLeaderboard('crypto_runner', 3),
+        SupabaseUtils.getDailyPosition(_username, 'crypto_runner')
+      ]).then(([top3, pos]) => {
+        let html = '';
+        for (let i = 0; i < 3; i++) {
+          const entry = top3[i];
+          const isMe = entry && _username && entry.username === _username.toLowerCase();
+          if (entry) {
+            html += `<div class="go-top3-row${isMe ? ' me' : ''}"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">${entry.username}</span><span class="go-top3-pts">${Number(entry.score).toLocaleString()}</span></div>`;
+          } else {
+            html += `<div class="go-top3-row" style="opacity:0.3;"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">---</span><span class="go-top3-pts">-</span></div>`;
+          }
+        }
+        // If user is not in top 3, show their position below
+        const inTop3 = top3.slice(0, 3).some(e => e && _username && e.username === _username.toLowerCase());
+        if (!inTop3 && pos.rank) {
+          html += `<div class="go-top3-row me" style="margin-top:4px;"><span class="go-top3-rank" style="font-size:13px;font-weight:700;color:var(--brand);">#${pos.rank}</span><span class="go-top3-name">${_username}</span><span class="go-top3-pts">${Number(pos.score || finalScore).toLocaleString()}</span></div>`;
+        }
+        listEl.innerHTML = html;
+      }).catch(() => {});
+
+      if (multiplier > 1 && rawScore > 0) {
+        const state = SupabaseUtils.getBoosterState();
+        const reasons = [];
+        if (state.question) reasons.push({ icon: '\u{1F9E0}', text: 'Pregunta del dia correcta' });
+        if (state.tarjeta) reasons.push({ icon: '\u{1F4B3}', text: '$10 gastados en tarjeta' });
+        if (state.compra) reasons.push({ icon: '\u{1F4B0}', text: '10 USDT comprados hoy' });
+        if (state.referral) reasons.push({ icon: '\u{1F91D}', text: '1 amigo cre\u{00F3} cuenta hoy' });
+
+        document.getElementById('multiplierAnimation').style.display = 'block';
+        const reasonsEl = document.getElementById('boosterReasons');
+        reasonsEl.innerHTML = '';
+
+        let delay = 500;
+        reasons.forEach((r, i) => {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;background:rgba(229,229,23,0.1);border:1px solid rgba(229,229,23,0.2);border-radius:8px;animation:fadeInUp 0.4s ease-out;';
+            div.innerHTML = `<span style="font-size:14px;">${r.icon}</span><span style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:#e5e517;">${r.text}</span><span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:12px;color:#1fcc4b;">x1.1</span>`;
+            reasonsEl.appendChild(div);
+            if (navigator.vibrate) navigator.vibrate(15);
+          }, delay + i * 500);
+        });
+
+        setTimeout(() => {
+          let current = rawScore;
+          const step = Math.max(1, Math.floor((finalScore - rawScore) / 30));
+          document.getElementById('multipliedScore').style.animation = 'fadeInUp 0.4s ease-out';
+          const interval = setInterval(() => {
+            current += step;
+            if (current >= finalScore) {
+              current = finalScore;
+              clearInterval(interval);
+              if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+            }
+            document.getElementById('multipliedScore').textContent = current.toLocaleString() + ' pts';
+          }, 30);
+        }, delay + reasons.length * 500 + 300);
+      }
+
+      // Submit multiplied score
       if (_username && finalScore > 0) {
         SupabaseUtils.submitScore(_username, 'crypto_runner', finalScore, coins).catch(() => {});
       }
@@ -1159,14 +1215,14 @@
     // ========== EVENTS ==========
     document.getElementById('startBtn').addEventListener('click', startGame);
     document.getElementById('retryBtn').addEventListener('click', startGame);
+    const SHARE_BTN_TEXT = 'COMPARTE TU PUNTAJE CON AMIGOS';
     document.getElementById('shareBtn').addEventListener('click', () => {
-      const text = `Corri ${Math.floor(score).toLocaleString()}m y recolecte ${coins} monedas en Crypto Runner de El Dorado! \u{1F3C3}\u{1FA99}`;
-      if (navigator.share) {
-        navigator.share({ title: 'Crypto Runner - El Dorado', text });
-      } else {
-        navigator.clipboard?.writeText(text);
-        alert('Resultado copiado!');
-      }
+      const text = `Corri ${Math.floor(score).toLocaleString()}m en Dorado Run escapando de la inflaci\u{00F3}n! \u{1F3C3}\u{1F3C6}\nDescarga El Dorado: https://play.google.com/store/apps/details?id=io.eldorado.app`;
+      navigator.clipboard?.writeText(text).then(() => {
+        const btn = document.getElementById('shareBtn');
+        btn.textContent = '\u{2705} COPIADO!';
+        setTimeout(() => { btn.textContent = SHARE_BTN_TEXT; }, 2000);
+      }).catch(() => {});
     });
 
     // ========== START ==========

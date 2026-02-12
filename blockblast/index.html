@@ -413,15 +413,15 @@
       font-weight: 700;
     }
 
-    .overlay-best {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .overlay-best span {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
+    .go-top3 { width: 100%; }
+    .go-top3-label { font-size: 10px; color: var(--text-secondary); font-family: 'Archivo Narrow', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; margin-bottom: 8px; }
+    .go-top3-list { display: flex; flex-direction: column; gap: 4px; }
+    .go-top3-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,0.04); border-radius: 8px; border: 1px solid transparent; }
+    .go-top3-row.me { background: rgba(229,229,23,0.1); border-color: rgba(229,229,23,0.25); }
+    .go-top3-rank { font-size: 16px; width: 24px; text-align: center; flex-shrink: 0; }
+    .go-top3-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-primary); font-family: 'Geist', sans-serif; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .go-top3-pts { font-size: 13px; font-weight: 700; color: var(--text-secondary); font-family: 'Archivo Narrow', sans-serif; flex-shrink: 0; }
+    .go-top3-row.me .go-top3-name, .go-top3-row.me .go-top3-pts { color: var(--brand); }
 
     .overlay-buttons {
       display: flex;
@@ -548,6 +548,11 @@
       100% { opacity: 0; transform: translateY(-70px) scale(1.4); }
     }
 
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* ========== ANIMATIONS ========== */
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
@@ -647,14 +652,17 @@
       <div class="overlay-emoji">&#x1F3C6;</div>
       <div class="overlay-title">Juego Terminado</div>
       <div class="overlay-score" id="finalScore">0</div>
-      <div class="overlay-reward">
-        <span>&#x1FA99;</span>
-        <span class="overlay-reward-text">Sigue jugando para entrar no <strong>Top 5</strong> y ganar cripto!</span>
+      <div id="multiplierAnimation" style="display:none;text-align:center;margin:12px 0;">
+        <div id="boosterReasons" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        <div id="multipliedScore" style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:56px;color:#1fcc4b;text-shadow:0 0 20px rgba(31,204,75,0.4);"></div>
       </div>
-      <div class="overlay-best">Mejor puntaje: <span id="finalBest">0</span></div>
+      <div class="go-top3" id="goTop3">
+        <div class="go-top3-label">RANKING DEL D&Iacute;A</div>
+        <div class="go-top3-list" id="goTop3List"></div>
+      </div>
       <div class="overlay-buttons">
         <button class="btn btn-primary" id="playAgainBtn">JUGAR DE NUEVO</button>
-        <button class="btn btn-secondary" id="shareBtn">COMPARTIR PUNTAJE</button>
+        <button class="btn btn-secondary" id="shareBtn">COMPARTE TU PUNTAJE CON AMIGOS</button>
       </div>
     </div>
   </div>
@@ -1048,12 +1056,79 @@
     function gameOver() {
       vibrate([50, 100, 50]);
       document.getElementById('finalScore').textContent = score.toLocaleString();
-      document.getElementById('finalBest').textContent = bestScore.toLocaleString();
+      document.getElementById('multiplierAnimation').style.display = 'none';
       document.getElementById('gameOverOverlay').classList.add('visible');
 
-      // Submit score to Supabase
+      const multiplier = SupabaseUtils.getMultiplier();
+      const finalScore = Math.round(score * multiplier);
+
+      // Fetch top 3 leaderboard
+      const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
+      const listEl = document.getElementById('goTop3List');
+      listEl.innerHTML = [0,1,2].map(i => `<div class="go-top3-row" style="opacity:0.4;"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">---</span><span class="go-top3-pts">-</span></div>`).join('');
+      Promise.all([
+        SupabaseUtils.getDailyLeaderboard('block_blast', 3),
+        SupabaseUtils.getDailyPosition(_username, 'block_blast')
+      ]).then(([top3, pos]) => {
+        let html = '';
+        for (let i = 0; i < 3; i++) {
+          const entry = top3[i];
+          const isMe = entry && _username && entry.username === _username.toLowerCase();
+          if (entry) {
+            html += `<div class="go-top3-row${isMe ? ' me' : ''}"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">${entry.username}</span><span class="go-top3-pts">${Number(entry.score).toLocaleString()}</span></div>`;
+          } else {
+            html += `<div class="go-top3-row" style="opacity:0.3;"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">---</span><span class="go-top3-pts">-</span></div>`;
+          }
+        }
+        const inTop3 = top3.slice(0, 3).some(e => e && _username && e.username === _username.toLowerCase());
+        if (!inTop3 && pos.rank) {
+          html += `<div class="go-top3-row me" style="margin-top:4px;"><span class="go-top3-rank" style="font-size:13px;font-weight:700;color:var(--brand);">#${pos.rank}</span><span class="go-top3-name">${_username}</span><span class="go-top3-pts">${Number(pos.score || finalScore).toLocaleString()}</span></div>`;
+        }
+        listEl.innerHTML = html;
+      }).catch(() => {});
+
+      if (multiplier > 1 && score > 0) {
+        const state = SupabaseUtils.getBoosterState();
+        const reasons = [];
+        if (state.question) reasons.push({ icon: '\u{1F9E0}', text: 'Pregunta del dia correcta' });
+        if (state.tarjeta) reasons.push({ icon: '\u{1F4B3}', text: '$10 gastados en tarjeta' });
+        if (state.compra) reasons.push({ icon: '\u{1F4B0}', text: '10 USDT comprados hoy' });
+        if (state.referral) reasons.push({ icon: '\u{1F91D}', text: '1 amigo cre\u{00F3} cuenta hoy' });
+
+        document.getElementById('multiplierAnimation').style.display = 'block';
+        const reasonsEl = document.getElementById('boosterReasons');
+        reasonsEl.innerHTML = '';
+
+        let delay = 500;
+        reasons.forEach((r, i) => {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;background:rgba(229,229,23,0.1);border:1px solid rgba(229,229,23,0.2);border-radius:8px;animation:fadeInUp 0.4s ease-out;';
+            div.innerHTML = `<span style="font-size:14px;">${r.icon}</span><span style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:var(--brand);">${r.text}</span><span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:12px;color:#1fcc4b;">x1.1</span>`;
+            reasonsEl.appendChild(div);
+            if (navigator.vibrate) navigator.vibrate(15);
+          }, delay + i * 500);
+        });
+
+        setTimeout(() => {
+          let current = score;
+          const step = Math.max(1, Math.floor((finalScore - score) / 30));
+          document.getElementById('multipliedScore').style.animation = 'fadeInUp 0.4s ease-out';
+          const interval = setInterval(() => {
+            current += step;
+            if (current >= finalScore) {
+              current = finalScore;
+              clearInterval(interval);
+              if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+            }
+            document.getElementById('multipliedScore').textContent = current.toLocaleString() + ' pts';
+          }, 30);
+        }, delay + reasons.length * 500 + 300);
+      }
+
+      // Submit multiplied score
       if (_username && score > 0) {
-        SupabaseUtils.submitScore(_username, 'block_blast', score).catch(() => {});
+        SupabaseUtils.submitScore(_username, 'block_blast', finalScore).catch(() => {});
       }
     }
 
@@ -1068,12 +1143,12 @@
 
     document.getElementById('shareBtn').addEventListener('click', () => {
       const text = `Hice ${score.toLocaleString()} puntos en Block Blast de El Dorado! Puedes superarme? \u{1F3C6}\u{1FA99}`;
-      if (navigator.share) {
-        navigator.share({ title: 'Block Blast - El Dorado', text });
-      } else {
-        navigator.clipboard?.writeText(text);
-        alert('Puntaje copiado!');
-      }
+      navigator.clipboard?.writeText(text).then(() => {
+        const btn = document.getElementById('shareBtn');
+        const orig = btn.textContent;
+        btn.textContent = '\u{2705} COPIADO!';
+        setTimeout(() => { btn.textContent = orig; }, 2000);
+      }).catch(() => {});
     });
 
     // Recalculate on resize/orientation
