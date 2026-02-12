@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Dorado - miniapp Arcade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=Geist:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #121211;
+      font-family: 'Geist', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Slides */
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    .slide.hidden-left {
+      transform: translateX(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .slide.hidden-right {
+      transform: translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(229,229,23,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(229,229,23,0.04) 0%, transparent 50%);
+      animation: pulse 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .slide-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 36px;
+      max-width: 900px;
+      padding: 0 40px;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-symbol { width: 56px; height: 56px; }
+    .logo-text { height: 28px; }
+
+    /* Text slides */
+    .big-text {
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 52px;
+      color: #fff;
+      text-align: center;
+      line-height: 1.2;
+      letter-spacing: 1px;
+    }
+
+    .big-text .highlight {
+      color: #e5e517;
+    }
+
+    .big-emoji {
+      font-size: 72px;
+      line-height: 1;
+    }
+
+    /* Slide 3 - Games */
+    .slide-title {
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 48px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #e5e517;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    .slide-title span {
+      color: #fff;
+    }
+
+    .games-image {
+      max-width: 80vw;
+      max-height: 55vh;
+      border-radius: 20px;
+      object-fit: contain;
+    }
+
+    /* Slide 4 - QR */
+    .title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title h1 {
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 64px;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: #e5e517;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .title .subtitle {
+      font-family: 'Geist', sans-serif;
+      font-weight: 400;
+      font-size: 20px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+
+    .qr-wrapper {
+      background: #fff;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow:
+        0 0 60px rgba(229,229,23,0.15),
+        0 0 120px rgba(229,229,23,0.05);
+      animation: glow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 40px rgba(229,229,23,0.1), 0 0 80px rgba(229,229,23,0.03); }
+      100% { box-shadow: 0 0 80px rgba(229,229,23,0.2), 0 0 160px rgba(229,229,23,0.07); }
+    }
+
+    .qr-wrapper img {
+      display: block;
+      width: 280px;
+      height: 280px;
+    }
+
+    .cta {
+      font-family: 'Geist', sans-serif;
+      font-weight: 600;
+      font-size: 22px;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .cta span { color: #e5e517; }
+
+    /* Navigation */
+    .nav-dots {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .nav-dot.active {
+      background: #e5e517;
+      transform: scale(1.2);
+    }
+
+    .nav-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: rgba(229,229,23,0.15);
+      border: 1px solid rgba(229,229,23,0.3);
+      color: #e5e517;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .nav-arrow:hover { background: rgba(229,229,23,0.3); }
+    .nav-arrow.left { left: 24px; }
+    .nav-arrow.right { right: 24px; }
+    .nav-arrow.hidden { opacity: 0; pointer-events: none; }
+
+    .footer {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Geist', sans-serif;
+      font-size: 14px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: Latinos + social + gaming -->
+  <div class="slide active" id="slide0">
+    <div class="slide-content">
+      <div class="logo">
+        <img class="logo-symbol" src="https://www.figma.com/api/mcp/asset/59dbf6db-afae-4370-a17e-ac7e35f21dc2" alt="El Dorado">
+        <img class="logo-text" src="https://www.figma.com/api/mcp/asset/4cf04516-e459-45bd-bb27-d68061e27dce" alt="el dorado">
+      </div>
+      <div class="big-emoji">📱🎮</div>
+      <div class="big-text">
+        Los latinos abren <span class="highlight">redes sociales todos los días</span> y juegan <span class="highlight">mucho</span> en el celular
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: El Dorado frequency -->
+  <div class="slide hidden-right" id="slide1">
+    <div class="slide-content">
+      <div class="logo">
+        <img class="logo-symbol" src="https://www.figma.com/api/mcp/asset/59dbf6db-afae-4370-a17e-ac7e35f21dc2" alt="El Dorado">
+        <img class="logo-text" src="https://www.figma.com/api/mcp/asset/4cf04516-e459-45bd-bb27-d68061e27dce" alt="el dorado">
+      </div>
+      <div class="big-emoji">💰</div>
+      <div class="big-text">
+        Somos el <span class="highlight">super app del dinero</span> y nuestros usuarios nos abren en promedio <span class="highlight">2 veces al mes</span>...
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Top Games -->
+  <div class="slide hidden-right" id="slide2">
+    <div class="slide-content">
+      <div class="logo">
+        <img class="logo-symbol" src="https://www.figma.com/api/mcp/asset/59dbf6db-afae-4370-a17e-ac7e35f21dc2" alt="El Dorado">
+        <img class="logo-text" src="https://www.figma.com/api/mcp/asset/4cf04516-e459-45bd-bb27-d68061e27dce" alt="el dorado">
+      </div>
+      <div class="slide-title">
+        <span>3er y 4to</span> juegos mas descargados<br>en la Play Store
+      </div>
+      <img class="games-image" src="WhatsApp Image 2026-02-12 at 19.27.52.jpeg" alt="Block Blast y Subway Surfers">
+    </div>
+  </div>
+
+  <!-- SLIDE 4: QR Code -->
+  <div class="slide hidden-right" id="slide3">
+    <div class="slide-content">
+      <div class="logo">
+        <img class="logo-symbol" src="https://www.figma.com/api/mcp/asset/59dbf6db-afae-4370-a17e-ac7e35f21dc2" alt="El Dorado">
+        <img class="logo-text" src="https://www.figma.com/api/mcp/asset/4cf04516-e459-45bd-bb27-d68061e27dce" alt="el dorado">
+      </div>
+      <div class="title">
+        <h1>miniapp Arcade</h1>
+        <div class="subtitle">Juega Dorado Run y escapa de la inflación</div>
+      </div>
+      <div class="qr-wrapper">
+        <img src="WhatsApp Image 2026-02-12 at 19.06.34.jpeg" alt="QR Code">
+      </div>
+      <div class="cta">Escanea el codigo para <span>jugar</span></div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <button class="nav-arrow left hidden" id="prevBtn" onclick="navigate(-1)">&#8249;</button>
+  <button class="nav-arrow right" id="nextBtn" onclick="navigate(1)">&#8250;</button>
+
+  <div class="nav-dots">
+    <div class="nav-dot active" onclick="goToSlide(0)"></div>
+    <div class="nav-dot" onclick="goToSlide(1)"></div>
+    <div class="nav-dot" onclick="goToSlide(2)"></div>
+    <div class="nav-dot" onclick="goToSlide(3)"></div>
+  </div>
+
+  <div class="footer">El Dorado Hackathon 2026</div>
+
+  <script>
+    let current = 0;
+    const total = 4;
+
+    function goToSlide(idx) {
+      if (idx === current || idx < 0 || idx >= total) return;
+      const dir = idx > current ? 1 : -1;
+
+      document.getElementById('slide' + current).className =
+        dir > 0 ? 'slide hidden-left' : 'slide hidden-right';
+      document.getElementById('slide' + idx).className = 'slide active';
+
+      current = idx;
+      updateNav();
+    }
+
+    function navigate(dir) {
+      goToSlide(current + dir);
+    }
+
+    function updateNav() {
+      document.querySelectorAll('.nav-dot').forEach((d, i) => {
+        d.className = i === current ? 'nav-dot active' : 'nav-dot';
+      });
+      document.getElementById('prevBtn').className =
+        current === 0 ? 'nav-arrow left hidden' : 'nav-arrow left';
+      document.getElementById('nextBtn').className =
+        current === total - 1 ? 'nav-arrow right hidden' : 'nav-arrow right';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') navigate(1);
+      if (e.key === 'ArrowLeft') navigate(-1);
+    });
+  </script>
+</body>
+</html>
