@@ -247,14 +247,91 @@
       box-shadow: inset 0 0 0 1.5px rgba(229, 64, 23, 0.4);
     }
 
-    .cell.clearing {
-      animation: clearPulse 0.4s ease-out;
+    .cell.special {
+      background: var(--brand);
+      border: 1.5px solid #ffd700;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25), 0 0 8px var(--brand-glow), 0 0 12px rgba(255,215,0,0.3);
+      animation: specialGlow 2s ease-in-out infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    @keyframes clearPulse {
-      0% { background: var(--brand); transform: scale(1.1); }
-      40% { background: #fff; transform: scale(1.15); }
-      100% { background: var(--surface-secondary); transform: scale(1); }
+    .cell.special img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+    }
+
+    @keyframes specialGlow {
+      0%, 100% { box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25), 0 0 8px var(--brand-glow), 0 0 12px rgba(255,215,0,0.3); }
+      50% { box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25), 0 0 14px var(--brand-glow-strong), 0 0 20px rgba(255,215,0,0.5); }
+    }
+
+    .cell.special.clearing {
+      animation: specialClearExplode 0.7s ease-out forwards;
+      z-index: 10;
+    }
+
+    @keyframes specialClearExplode {
+      0% { background: #ffd700; transform: scale(1); opacity: 1; box-shadow: 0 0 12px #ffd700; }
+      15% { background: #fff; transform: scale(1.8); opacity: 1; box-shadow: 0 0 30px #fff, 0 0 50px #ffd700; }
+      40% { background: #ffd700; transform: scale(0.5); opacity: 0.9; box-shadow: 0 0 10px #ffd700; }
+      100% { background: var(--surface-secondary); transform: scale(1); opacity: 1; box-shadow: none; }
+    }
+
+    .cell.clearing {
+      animation: clearExplode 0.6s ease-out forwards;
+      z-index: 10;
+    }
+
+    @keyframes clearExplode {
+      0% { background: var(--brand); transform: scale(1); opacity: 1; box-shadow: 0 0 8px var(--brand); }
+      20% { background: #fff; transform: scale(1.5); opacity: 1; box-shadow: 0 0 20px #fff, 0 0 40px var(--brand); }
+      50% { background: var(--brand); transform: scale(0.4); opacity: 0.8; box-shadow: 0 0 4px var(--brand); }
+      100% { background: var(--surface-secondary); transform: scale(1); opacity: 1; box-shadow: none; }
+    }
+
+    .grid.shake {
+      animation: gridShake 0.4s ease-out;
+    }
+
+    @keyframes gridShake {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-3px); }
+      30% { transform: translateX(3px); }
+      45% { transform: translateX(-2px); }
+      60% { transform: translateX(2px); }
+      75% { transform: translateX(-1px); }
+    }
+
+    .line-flash {
+      position: absolute;
+      pointer-events: none;
+      z-index: 50;
+      background: linear-gradient(90deg, transparent, rgba(229,229,23,0.6), rgba(255,255,255,0.8), rgba(229,229,23,0.6), transparent);
+      animation: flashSweep 0.5s ease-out forwards;
+    }
+
+    @keyframes flashSweep {
+      0% { opacity: 1; transform: scaleX(0.3); }
+      40% { opacity: 1; transform: scaleX(1.1); }
+      100% { opacity: 0; transform: scaleX(1.2); }
+    }
+
+    .explosion-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 100;
+      animation: particleFly var(--dur, 0.7s) ease-out forwards;
+    }
+
+    @keyframes particleFly {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      60% { opacity: 0.8; }
+      100% { transform: translate(var(--tx, 20px), var(--ty, -20px)) scale(0); opacity: 0; }
     }
 
     /* ========== PIECES ========== */
@@ -297,6 +374,21 @@
       box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2);
     }
 
+    .piece-cell.special {
+      background: var(--brand);
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2), 0 0 6px rgba(255,215,0,0.4);
+      border: 1px solid #ffd700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .piece-cell.special img {
+      width: 12px;
+      height: 12px;
+      object-fit: contain;
+    }
+
     .piece-cell.empty { background: transparent; }
 
     /* ========== FLOATING PIECE ========== */
@@ -317,6 +409,22 @@
     }
 
     .floating-cell.empty { background: transparent; box-shadow: none; }
+
+    .floating-cell.special {
+      background: var(--brand);
+      border: 1.5px solid #ffd700;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.25), 0 0 8px rgba(255,215,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floating-cell.special img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+    }
 
     /* ========== BOTTOM BAR ========== */
     .bottom-bar {
@@ -548,6 +656,35 @@
       100% { opacity: 0; transform: translateY(-70px) scale(1.4); }
     }
 
+    .bonus-popup {
+      position: fixed;
+      pointer-events: none;
+      z-index: 155;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 24px;
+      color: #ffd700;
+      text-shadow: 0 0 12px rgba(255,215,0,0.6), 0 1px 3px rgba(0,0,0,0.5);
+      animation: bonusFloat 1.1s ease-out forwards;
+    }
+
+    .bonus-popup img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 4px rgba(255,215,0,0.5));
+    }
+
+    @keyframes bonusFloat {
+      0% { opacity: 1; transform: translateY(0) scale(0.5); }
+      15% { opacity: 1; transform: translateY(-10px) scale(1.3); }
+      30% { opacity: 1; transform: translateY(-20px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-90px) scale(1.4); }
+    }
+
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -604,8 +741,8 @@
 
     <!-- Reward Banner -->
     <div class="reward-banner">
-      <span class="coin">&#x1FA99;</span>
-      <span class="reward-text">Top 5 diario gana recompensas en <strong>USDT, BTC o ETH</strong></span>
+      <span class="coin">&#128161;</span>
+      <span class="reward-text">Ative os boosters na tela principal para <strong>pontuar mais!</strong></span>
     </div>
 
     <!-- Grid -->
@@ -675,6 +812,34 @@
     }
     const _username = SupabaseUtils.getCurrentUsername();
 
+    // ========== SEEDED PRNG (Mulberry32) ==========
+    function mulberry32(seed) {
+      return function() {
+        seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+        var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function makeSeed(gameNumber) {
+      const d = new Date();
+      const dateSeed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+      return dateSeed * 1000 + gameNumber;
+    }
+
+    let rng = null; // seeded random function, set on init
+
+    // ========== SPECIAL BLOCK ICONS ==========
+    const SPECIAL_ICONS = {
+      2: 'https://www.figma.com/api/mcp/asset/fc54af77-ed41-4294-80c9-0f1108b57f92',  // P2P
+      3: 'https://www.figma.com/api/mcp/asset/d7ad3138-bbdd-4b87-8150-34145ab71389',  // Cuenta USA
+      4: 'https://www.figma.com/api/mcp/asset/aad4f526-7b00-4155-8a73-347be9cb2b8b',  // Tarjeta
+      5: 'https://www.figma.com/api/mcp/asset/e957c309-3ffb-4671-aa97-c54ab447f927',  // Cripto
+      6: 'https://www.figma.com/api/mcp/asset/4abb6f72-e703-4578-b1f1-c323a22fbfc5',  // Earn
+    };
+    const SPECIAL_BONUS = 50;
+
     // ========== GAME CONFIG ==========
     const GRID_SIZE = 8;
     let grid = [];
@@ -687,18 +852,87 @@
     let dragOffsetY = 0;
     let gridRect = null;
     let cellSize = 0;
+    let currentGameNumber = 0;
+    let currentMultiplier = 1.0;
 
-    // Load best score from Supabase
+    // Load best score and multiplier
     (async () => {
       try {
-        const remoteBest = await SupabaseUtils.getBestScore(_username, 'block_blast');
+        const [remoteBest, mult] = await Promise.all([
+          SupabaseUtils.getBestScore(_username),
+          SupabaseUtils.getMultiplier(_username),
+        ]);
         if (remoteBest > bestScore) {
           bestScore = remoteBest;
           localStorage.setItem('bb_best', bestScore.toString());
           document.getElementById('bestScore').textContent = bestScore.toLocaleString();
         }
+        currentMultiplier = mult;
       } catch (e) { /* offline fallback */ }
     })();
+
+    // ========== SOUND ==========
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, type, vol) {
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(vol || 0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function soundPlace() {
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(280, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      } catch (e) {}
+    }
+
+    function soundClear(lineCount) {
+      playTone(523, 0.12, 'sine', 0.18);
+      setTimeout(() => playTone(659, 0.12, 'sine', 0.18), 60);
+      setTimeout(() => playTone(784, 0.15, 'sine', 0.2), 120);
+      if (lineCount > 1) {
+        setTimeout(() => playTone(1047, 0.2, 'sine', 0.22), 180);
+      }
+    }
+
+    function soundCombo(mult) {
+      const base = 600 + mult * 100;
+      playTone(base, 0.1, 'sine', 0.15);
+      setTimeout(() => playTone(base * 1.25, 0.1, 'sine', 0.18), 80);
+      setTimeout(() => playTone(base * 1.5, 0.15, 'triangle', 0.2), 160);
+      setTimeout(() => playTone(base * 2, 0.25, 'sine', 0.15), 240);
+    }
+
+    function soundGameOver() {
+      playTone(400, 0.15, 'sawtooth', 0.1);
+      setTimeout(() => playTone(300, 0.15, 'sawtooth', 0.1), 150);
+      setTimeout(() => playTone(200, 0.3, 'sawtooth', 0.12), 300);
+    }
 
     // ========== PIECES ==========
     const PIECES = [
@@ -735,11 +969,18 @@
     function cacheGridRect() {
       const gridEl = document.getElementById('grid');
       gridRect = gridEl.getBoundingClientRect();
-      cellSize = (gridRect.width - 12) / GRID_SIZE; // 6px padding each side
+      cellSize = (gridRect.width - 12) / GRID_SIZE;
     }
 
     // ========== INIT ==========
-    function init() {
+    async function init() {
+      // Fetch game count for seeded RNG
+      currentGameNumber = await SupabaseUtils.getGameCountToday(_username);
+      rng = mulberry32(makeSeed(currentGameNumber));
+
+      // Refresh multiplier
+      currentMultiplier = await SupabaseUtils.getMultiplier(_username);
+
       grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
       score = 0;
       comboCount = 0;
@@ -756,8 +997,17 @@
       gridEl.innerHTML = '';
       for (let r = 0; r < GRID_SIZE; r++) {
         for (let c = 0; c < GRID_SIZE; c++) {
+          const val = grid[r][c];
           const cell = document.createElement('div');
-          cell.className = 'cell' + (grid[r][c] ? ' filled' : '');
+          if (val >= 2) {
+            cell.className = 'cell special';
+            const img = document.createElement('img');
+            img.src = SPECIAL_ICONS[val];
+            img.alt = '';
+            cell.appendChild(img);
+          } else {
+            cell.className = 'cell' + (val ? ' filled' : '');
+          }
           cell.dataset.row = r;
           cell.dataset.col = c;
           gridEl.appendChild(cell);
@@ -766,14 +1016,61 @@
     }
 
     // ========== PIECES ==========
-    function getRandomPiece() {
-      return { shape: PIECES[Math.floor(Math.random() * PIECES.length)].shape, used: false };
+    function getRandomPiece(allowSpecial) {
+      const shape = PIECES[Math.floor(rng() * PIECES.length)].shape;
+      let specialCells = null;
+      if (allowSpecial && rng() < 0.20) {
+        // Pick a random filled cell in the shape
+        const filled = [];
+        for (let r = 0; r < shape.length; r++)
+          for (let c = 0; c < shape[0].length; c++)
+            if (shape[r][c]) filled.push({ r, c });
+        if (filled.length > 0) {
+          const pick = filled[Math.floor(rng() * filled.length)];
+          const type = 2 + Math.floor(rng() * 5); // 2-6
+          specialCells = [{ r: pick.r, c: pick.c, type }];
+        }
+      }
+      return { shape, used: false, specialCells };
     }
 
     function spawnPieces() {
-      currentPieces = [getRandomPiece(), getRandomPiece(), getRandomPiece()];
+      const usedIndices = [];
+      currentPieces = [];
+      let hasSpecial = false;
+      for (let i = 0; i < 3; i++) {
+        let idx;
+        let attempts = 0;
+        do {
+          idx = Math.floor(rng() * PIECES.length);
+          attempts++;
+        } while (usedIndices.includes(idx) && attempts < 20);
+        usedIndices.push(idx);
+        const piece = getRandomPiece(!hasSpecial);
+        piece.shape = PIECES[idx].shape;
+        if (piece.specialCells) {
+          // Re-validate specialCells against this shape
+          const filled = [];
+          for (let r = 0; r < piece.shape.length; r++)
+            for (let c = 0; c < piece.shape[0].length; c++)
+              if (piece.shape[r][c]) filled.push({ r, c });
+          if (filled.length > 0 && piece.specialCells.length > 0) {
+            const pick = filled[Math.floor(rng() * filled.length)];
+            piece.specialCells[0].r = pick.r;
+            piece.specialCells[0].c = pick.c;
+          }
+          hasSpecial = true;
+        }
+        currentPieces.push(piece);
+      }
       renderPieces();
       if (!canPlaceAnyPiece()) setTimeout(gameOver, 300);
+    }
+
+    function isSpecialCell(piece, r, c) {
+      if (!piece.specialCells) return null;
+      const sc = piece.specialCells.find(s => s.r === r && s.c === c);
+      return sc || null;
     }
 
     function renderPieces() {
@@ -793,7 +1090,16 @@
           for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
               const cell = document.createElement('div');
-              cell.className = 'piece-cell ' + (piece.shape[r][c] ? 'active' : 'empty');
+              const sc = isSpecialCell(piece, r, c);
+              if (sc) {
+                cell.className = 'piece-cell special';
+                const img = document.createElement('img');
+                img.src = SPECIAL_ICONS[sc.type];
+                img.alt = '';
+                cell.appendChild(img);
+              } else {
+                cell.className = 'piece-cell ' + (piece.shape[r][c] ? 'active' : 'empty');
+              }
               pg.appendChild(cell);
             }
           }
@@ -846,9 +1152,10 @@
       const { startRow, startCol } = getPlacement(x, y, piece);
 
       if (canPlacePiece(piece.shape, startRow, startCol)) {
-        placePiece(piece.shape, startRow, startCol);
+        placePiece(piece.shape, startRow, startCol, piece.specialCells);
         currentPieces[idx].used = true;
         vibrate(15);
+        soundPlace();
 
         let cells = 0;
         piece.shape.forEach(row => row.forEach(c => { if (c) cells++; }));
@@ -863,6 +1170,8 @@
           showCombo(mult);
           showScorePopup(pts, x, y - 80);
           vibrate([20, 30, 20]);
+          soundClear(cleared);
+          if (mult > 1) setTimeout(() => soundCombo(mult), 200);
         } else {
           comboCount = 0;
           hideCombo();
@@ -897,7 +1206,16 @@
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const cell = document.createElement('div');
-          cell.className = piece.shape[r][c] ? 'floating-cell' : 'floating-cell empty';
+          const sc = isSpecialCell(piece, r, c);
+          if (sc) {
+            cell.className = 'floating-cell special';
+            const img = document.createElement('img');
+            img.src = SPECIAL_ICONS[sc.type];
+            img.alt = '';
+            cell.appendChild(img);
+          } else {
+            cell.className = piece.shape[r][c] ? 'floating-cell' : 'floating-cell empty';
+          }
           floatingEl.appendChild(cell);
         }
       }
@@ -970,10 +1288,73 @@
       return true;
     }
 
-    function placePiece(shape, sr, sc) {
+    function placePiece(shape, sr, sc, specialCells) {
       for (let r = 0; r < shape.length; r++)
-        for (let c = 0; c < shape[0].length; c++)
-          if (shape[r][c]) grid[sr + r][sc + c] = 1;
+        for (let c = 0; c < shape[0].length; c++) {
+          if (!shape[r][c]) continue;
+          let val = 1;
+          if (specialCells) {
+            const sc2 = specialCells.find(s => s.r === r && s.c === c);
+            if (sc2) val = sc2.type;
+          }
+          grid[sr + r][sc + c] = val;
+        }
+    }
+
+    function spawnParticles(el) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const colors = ['#e5e517', '#fff', '#eaea43', '#f5f580', '#fffbe6'];
+      const count = 10;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'explosion-particle';
+        const size = 4 + Math.random() * 6;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = cx + 'px';
+        p.style.top = cy + 'px';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.boxShadow = '0 0 ' + (size + 2) + 'px ' + p.style.background;
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.8;
+        const dist = 30 + Math.random() * 50;
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        const dur = 0.5 + Math.random() * 0.4;
+        p.style.setProperty('--tx', tx + 'px');
+        p.style.setProperty('--ty', ty + 'px');
+        p.style.setProperty('--dur', dur + 's');
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+      }
+    }
+
+    function spawnLineFlash(line) {
+      const gridEl = document.getElementById('grid');
+      const gridR = gridEl.getBoundingClientRect();
+      const flash = document.createElement('div');
+      flash.className = 'line-flash';
+      if (line.type === 'row') {
+        const firstCell = document.querySelector(`.cell[data-row="${line.i}"][data-col="0"]`);
+        if (!firstCell) return;
+        const cr = firstCell.getBoundingClientRect();
+        flash.style.left = gridR.left + 'px';
+        flash.style.top = cr.top + 'px';
+        flash.style.width = gridR.width + 'px';
+        flash.style.height = cr.height + 'px';
+      } else {
+        const firstCell = document.querySelector(`.cell[data-row="0"][data-col="${line.i}"]`);
+        if (!firstCell) return;
+        const cr = firstCell.getBoundingClientRect();
+        flash.style.left = cr.left + 'px';
+        flash.style.top = gridR.top + 'px';
+        flash.style.width = cr.width + 'px';
+        flash.style.height = gridR.height + 'px';
+        flash.style.background = 'linear-gradient(180deg, transparent, rgba(229,229,23,0.6), rgba(255,255,255,0.8), rgba(229,229,23,0.6), transparent)';
+      }
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 550);
     }
 
     function checkAndClearLines() {
@@ -987,14 +1368,66 @@
       }
       if (!lines.length) return 0;
 
+      // Collect special blocks in cleared lines (deduplicate by r,c)
+      const specialSet = new Set();
+      const specialBlocks = [];
       lines.forEach(l => {
+        for (let i = 0; i < GRID_SIZE; i++) {
+          const r = l.type === 'row' ? l.i : i;
+          const c = l.type === 'row' ? i : l.i;
+          const key = r + ',' + c;
+          if (grid[r][c] >= 2 && !specialSet.has(key)) {
+            specialSet.add(key);
+            specialBlocks.push({ r, c, type: grid[r][c] });
+          }
+        }
+      });
+
+      // Shake the grid
+      const gridEl = document.getElementById('grid');
+      gridEl.classList.remove('shake');
+      void gridEl.offsetWidth;
+      gridEl.classList.add('shake');
+      setTimeout(() => gridEl.classList.remove('shake'), 450);
+
+      // Flash + particles per line
+      lines.forEach(l => {
+        spawnLineFlash(l);
         for (let i = 0; i < GRID_SIZE; i++) {
           const el = l.type === 'row'
             ? document.querySelector(`.cell[data-row="${l.i}"][data-col="${i}"]`)
             : document.querySelector(`.cell[data-row="${i}"][data-col="${l.i}"]`);
-          if (el) el.classList.add('clearing');
+          if (el) {
+            el.classList.add('clearing');
+            spawnParticles(el);
+          }
         }
       });
+
+      // Special block bonuses
+      if (specialBlocks.length > 0) {
+        let bonusTotal = 0;
+        specialBlocks.forEach((sb, idx) => {
+          const el = document.querySelector(`.cell[data-row="${sb.r}"][data-col="${sb.c}"]`);
+          if (el) {
+            // Extra particles for special blocks
+            spawnParticles(el);
+            spawnParticles(el);
+          }
+          const rect = el ? el.getBoundingClientRect() : null;
+          const bx = rect ? rect.left + rect.width / 2 : 180;
+          const by = rect ? rect.top : 300;
+          setTimeout(() => {
+            showBonusPopup(SPECIAL_BONUS, bx, by, SPECIAL_ICONS[sb.type]);
+          }, idx * 120);
+          bonusTotal += SPECIAL_BONUS;
+        });
+        addScore(bonusTotal);
+        soundBonus();
+      }
+
+      // Vibrate
+      vibrate(lines.length > 1 ? [50, 30, 80] : 40);
 
       setTimeout(() => {
         lines.forEach(l => {
@@ -1052,30 +1485,85 @@
       setTimeout(() => p.remove(), 800);
     }
 
+    function showBonusPopup(pts, x, y, iconUrl) {
+      const p = document.createElement('div');
+      p.className = 'bonus-popup';
+      if (iconUrl) {
+        const img = document.createElement('img');
+        img.src = iconUrl;
+        img.alt = '';
+        p.appendChild(img);
+      }
+      const txt = document.createElement('span');
+      txt.textContent = `+${pts}`;
+      p.appendChild(txt);
+      p.style.left = (x - 30) + 'px';
+      p.style.top = y + 'px';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1100);
+    }
+
+    function soundBonus() {
+      try {
+        const ctx = getAudioCtx();
+        // Bling coin sound - two quick ascending tones
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(1200, ctx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(1800, ctx.currentTime + 0.08);
+        gain1.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start();
+        osc1.stop(ctx.currentTime + 0.15);
+
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(1800, ctx.currentTime + 0.08);
+        osc2.frequency.exponentialRampToValueAtTime(2400, ctx.currentTime + 0.18);
+        gain2.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain2.gain.setValueAtTime(0.15, ctx.currentTime + 0.08);
+        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(ctx.currentTime + 0.08);
+        osc2.stop(ctx.currentTime + 0.25);
+      } catch (e) {}
+    }
+
     // ========== GAME OVER ==========
-    function gameOver() {
+    async function gameOver() {
       vibrate([50, 100, 50]);
+      soundGameOver();
       document.getElementById('finalScore').textContent = score.toLocaleString();
       document.getElementById('multiplierAnimation').style.display = 'none';
       document.getElementById('gameOverOverlay').classList.add('visible');
 
-      const multiplier = SupabaseUtils.getMultiplier();
+      const multiplier = currentMultiplier;
       const finalScore = Math.round(score * multiplier);
+
+      // Submit score first
+      if (_username && score > 0) {
+        await SupabaseUtils.submitScore(_username, score, multiplier, finalScore).catch(() => {});
+      }
 
       // Fetch top 3 leaderboard
       const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}'];
       const listEl = document.getElementById('goTop3List');
       listEl.innerHTML = [0,1,2].map(i => `<div class="go-top3-row" style="opacity:0.4;"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">---</span><span class="go-top3-pts">-</span></div>`).join('');
       Promise.all([
-        SupabaseUtils.getDailyLeaderboard('block_blast', 3),
-        SupabaseUtils.getDailyPosition(_username, 'block_blast')
+        SupabaseUtils.getDailyLeaderboard(3),
+        SupabaseUtils.getDailyPosition(_username)
       ]).then(([top3, pos]) => {
         let html = '';
         for (let i = 0; i < 3; i++) {
           const entry = top3[i];
           const isMe = entry && _username && entry.username === _username.toLowerCase();
           if (entry) {
-            html += `<div class="go-top3-row${isMe ? ' me' : ''}"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">${entry.username}</span><span class="go-top3-pts">${Number(entry.score).toLocaleString()}</span></div>`;
+            html += `<div class="go-top3-row${isMe ? ' me' : ''}"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">${entry.username}</span><span class="go-top3-pts">${Number(entry.final_score).toLocaleString()}</span></div>`;
           } else {
             html += `<div class="go-top3-row" style="opacity:0.3;"><span class="go-top3-rank">${medals[i]}</span><span class="go-top3-name">---</span><span class="go-top3-pts">-</span></div>`;
           }
@@ -1087,13 +1575,12 @@
         listEl.innerHTML = html;
       }).catch(() => {});
 
+      // Show multiplier animation if boosted
       if (multiplier > 1 && score > 0) {
-        const state = SupabaseUtils.getBoosterState();
+        const boosts = await SupabaseUtils.getDailyBoosts(_username);
         const reasons = [];
-        if (state.question) reasons.push({ icon: '\u{1F9E0}', text: 'Pregunta del dia correcta' });
-        if (state.tarjeta) reasons.push({ icon: '\u{1F4B3}', text: '$10 gastados en tarjeta' });
-        if (state.compra) reasons.push({ icon: '\u{1F4B0}', text: '10 USDT comprados hoy' });
-        if (state.referral) reasons.push({ icon: '\u{1F91D}', text: '1 amigo cre\u{00F3} cuenta hoy' });
+        if (boosts.question_correct) reasons.push({ icon: '\u{1F9E0}', text: 'Pregunta del dia correcta' });
+        if (boosts.shared_link) reasons.push({ icon: '\u{1F91D}', text: 'Link compartido con amigos' });
 
         document.getElementById('multiplierAnimation').style.display = 'block';
         const reasonsEl = document.getElementById('boosterReasons');
@@ -1124,11 +1611,6 @@
             document.getElementById('multipliedScore').textContent = current.toLocaleString() + ' pts';
           }, 30);
         }, delay + reasons.length * 500 + 300);
-      }
-
-      // Submit multiplied score
-      if (_username && score > 0) {
-        SupabaseUtils.submitScore(_username, 'block_blast', finalScore).catch(() => {});
       }
     }
 
