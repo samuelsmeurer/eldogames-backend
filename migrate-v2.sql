@@ -1,14 +1,12 @@
--- El Dorado Games - Database Schema
+-- Migration v2: Simplify for Block Blast only
+-- Run this ONCE to migrate from old schema to new schema
 
--- Users
-CREATE TABLE IF NOT EXISTS users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  username TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  total_games_played INT DEFAULT 0
-);
+-- Drop old tables
+DROP TABLE IF EXISTS user_boosters CASCADE;
+DROP TABLE IF EXISTS boosters CASCADE;
+DROP TABLE IF EXISTS scores CASCADE;
 
--- Scores (Block Blast only)
+-- Recreate scores with new structure
 CREATE TABLE IF NOT EXISTS scores (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id),
@@ -24,7 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_scores_leaderboard ON scores(date, final_score DE
 CREATE INDEX IF NOT EXISTS idx_scores_username ON scores(username);
 CREATE INDEX IF NOT EXISTS idx_scores_user_date ON scores(username, date);
 
--- Daily boosts (share link + daily question)
+-- Create daily boosts
 CREATE TABLE IF NOT EXISTS daily_boosts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id),
@@ -36,7 +34,7 @@ CREATE TABLE IF NOT EXISTS daily_boosts (
   UNIQUE(username, date)
 );
 
--- Daily questions
+-- Create daily questions
 CREATE TABLE IF NOT EXISTS daily_questions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   question TEXT NOT NULL,
@@ -44,3 +42,6 @@ CREATE TABLE IF NOT EXISTS daily_questions (
   correct_answer INT NOT NULL,
   date DATE UNIQUE NOT NULL
 );
+
+-- Reset game counts
+UPDATE users SET total_games_played = 0;

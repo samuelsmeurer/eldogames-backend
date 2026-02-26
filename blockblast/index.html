@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#121211">
-  <title>Block Blast - El Dorado</title>
+  <title>Bloques de Oro - El Dorado</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -555,8 +555,9 @@
       justify-content: center;
       z-index: 300;
       transition: opacity 0.5s;
-      gap: 24px;
-      padding: 40px;
+      gap: 16px;
+      padding: 24px;
+      overflow-y: auto;
     }
 
     .welcome-screen.hidden { opacity: 0; pointer-events: none; }
@@ -630,6 +631,90 @@
       margin-top: 8px;
     }
 
+    .welcome-leaderboard {
+      width: 100%;
+      max-width: 320px;
+      background: var(--surface);
+      border: 1px solid var(--stroke-secondary);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .welcome-lb-title {
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .welcome-lb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .welcome-lb-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      border: 1px solid transparent;
+    }
+
+    .welcome-lb-row.gold { background: rgba(229,229,23,0.08); border-color: rgba(229,229,23,0.2); }
+
+    .welcome-lb-rank {
+      font-size: 16px;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .welcome-lb-name {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .welcome-lb-score {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: 'Archivo Narrow', sans-serif;
+      flex-shrink: 0;
+      margin-right: 4px;
+    }
+
+    .welcome-lb-prize {
+      font-size: 12px;
+      font-weight: 700;
+      color: #26a17b;
+      font-family: 'Archivo Narrow', sans-serif;
+      flex-shrink: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .welcome-lb-row.skeleton {
+      opacity: 0.3;
+      height: 38px;
+    }
+
+    .welcome-lb-empty {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 12px 0;
+      opacity: 0.6;
+    }
+
     .welcome-powered {
       font-size: 11px;
       color: var(--text-secondary);
@@ -690,6 +775,48 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes boosterSlam {
+      0% { opacity: 0; transform: translateY(-20px) scale(0.5); }
+      50% { opacity: 1; transform: translateY(4px) scale(1.1); }
+      70% { transform: translateY(-2px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes scoreGlow {
+      0% { text-shadow: 0 0 30px rgba(31,204,75,0.5); }
+      50% { text-shadow: 0 0 60px rgba(31,204,75,0.8), 0 0 100px rgba(31,204,75,0.3); }
+      100% { text-shadow: 0 0 30px rgba(31,204,75,0.5); }
+    }
+
+    @keyframes scorePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .multiplied-score-counting {
+      animation: scoreGlow 0.6s ease-in-out infinite, scorePulse 0.3s ease-in-out infinite;
+    }
+
+    .multiplied-score-done {
+      animation: scoreGlow 2s ease-in-out infinite;
+    }
+
+    .booster-reason-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(229,229,23,0.08);
+      border: 1.5px solid rgba(229,229,23,0.3);
+      border-radius: 10px;
+      animation: boosterSlam 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+
+    .booster-reason-card .booster-icon { font-size: 18px; }
+    .booster-reason-card .booster-text { font-family: 'Geist',sans-serif; font-size: 13px; font-weight: 600; color: var(--brand); }
+    .booster-reason-card .booster-mult { font-family: 'Archivo Narrow',sans-serif; font-weight: 700; font-size: 16px; color: #1fcc4b; text-shadow: 0 0 8px rgba(31,204,75,0.4); }
+
     /* ========== ANIMATIONS ========== */
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
@@ -718,7 +845,7 @@
             <text x="12" y="17" text-anchor="middle" font-family="Archivo Narrow" font-weight="700" font-size="15" fill="#e5e517">ED</text>
           </svg>
         </div>
-        <span class="top-bar-title">BLOCK BLAST</span>
+        <span class="top-bar-title">BLOQUES DE ORO</span>
       </div>
       <button class="ranking-btn" id="leaderboardBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
@@ -740,9 +867,9 @@
     </div>
 
     <!-- Reward Banner -->
-    <div class="reward-banner">
+    <div class="reward-banner" id="rewardBanner">
       <span class="coin">&#128161;</span>
-      <span class="reward-text">Ative os boosters na tela principal para <strong>pontuar mais!</strong></span>
+      <span class="reward-text" id="rewardText">Activa los boosters en la pantalla principal para <strong>puntuar mas!</strong></span>
     </div>
 
     <!-- Grid -->
@@ -763,6 +890,17 @@
     <div class="home-indicator"></div>
   </div>
 
+  <!-- Ranking Popup -->
+  <div class="overlay" id="rankingOverlay">
+    <div class="overlay-card" style="max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+        <div class="overlay-title" style="font-size:20px;">RANKING DEL D&Iacute;A</div>
+        <button id="closeRankingBtn" style="background:var(--surface-secondary);border:1px solid var(--stroke-secondary);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary);font-size:18px;">&times;</button>
+      </div>
+      <div id="rankingPopupList" style="width:100%;display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+  </div>
+
   <!-- Welcome Screen -->
   <div class="welcome-screen" id="welcomeScreen">
     <div class="welcome-logo">
@@ -770,14 +908,15 @@
         <text x="12" y="18" text-anchor="middle" font-family="Archivo Narrow" font-weight="700" font-size="16" fill="#121211">ED</text>
       </svg>
     </div>
-    <div class="welcome-title">Block Blast</div>
+    <div class="welcome-title">Bloques de Oro</div>
     <div class="welcome-subtitle">
-      Juega, compite y gana <strong>recompensas en cripto</strong> de verdad. Top 5 diario recibe premios.
+      Juega, completa los boosters diarios y gana <strong>recompensas en USDT!</strong> Top 5 usuarios reciben premios diarios.
     </div>
-    <div class="welcome-crypto-icons">
-      <div class="crypto-chip"><span class="dot dot-usdt"></span> USDT</div>
-      <div class="crypto-chip"><span class="dot dot-btc"></span> BTC</div>
-      <div class="crypto-chip"><span class="dot dot-eth"></span> ETH</div>
+    <div class="welcome-leaderboard" id="welcomeLeaderboard">
+      <div class="welcome-lb-title">RANKING DEL DÍA</div>
+      <div class="welcome-lb-list" id="welcomeLbList">
+        <div class="welcome-lb-row skeleton"><span class="welcome-lb-rank">&nbsp;</span><span class="welcome-lb-name">&nbsp;</span><span class="welcome-lb-prize">&nbsp;</span></div>
+      </div>
     </div>
     <button class="btn btn-primary welcome-btn" id="startBtn">JUGAR AHORA</button>
     <div class="welcome-powered">POWERED BY EL DORADO</div>
@@ -789,9 +928,10 @@
       <div class="overlay-emoji">&#x1F3C6;</div>
       <div class="overlay-title">Juego Terminado</div>
       <div class="overlay-score" id="finalScore">0</div>
-      <div id="multiplierAnimation" style="display:none;text-align:center;margin:12px 0;">
-        <div id="boosterReasons" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
-        <div id="multipliedScore" style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:56px;color:#1fcc4b;text-shadow:0 0 20px rgba(31,204,75,0.4);"></div>
+      <div id="multiplierAnimation" style="display:none;text-align:center;margin:16px 0;">
+        <div id="boosterReasons" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+        <div style="font-family:'Archivo Narrow',sans-serif;font-size:11px;letter-spacing:2px;color:var(--text-secondary);margin-bottom:4px;" id="multiplierLabel"></div>
+        <div id="multipliedScore" style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:64px;color:#1fcc4b;text-shadow:0 0 30px rgba(31,204,75,0.5);transition:transform 0.15s,text-shadow 0.15s;"></div>
       </div>
       <div class="go-top3" id="goTop3">
         <div class="go-top3-label">RANKING DEL D&Iacute;A</div>
@@ -830,13 +970,18 @@
 
     let rng = null; // seeded random function, set on init
 
-    // ========== SPECIAL BLOCK ICONS ==========
+    // ========== SPECIAL BLOCK ICONS (inline SVG data URIs) ==========
     const SPECIAL_ICONS = {
-      2: 'https://www.figma.com/api/mcp/asset/fc54af77-ed41-4294-80c9-0f1108b57f92',  // P2P
-      3: 'https://www.figma.com/api/mcp/asset/d7ad3138-bbdd-4b87-8150-34145ab71389',  // Cuenta USA
-      4: 'https://www.figma.com/api/mcp/asset/aad4f526-7b00-4155-8a73-347be9cb2b8b',  // Tarjeta
-      5: 'https://www.figma.com/api/mcp/asset/e957c309-3ffb-4671-aa97-c54ab447f927',  // Cripto
-      6: 'https://www.figma.com/api/mcp/asset/4abb6f72-e703-4578-b1f1-c323a22fbfc5',  // Earn
+      // P2P - two arrows exchanging
+      2: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#121211"/><path d="M8 12h12l-3-3" stroke="#e5e517" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M24 20H12l3 3" stroke="#e5e517" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'),
+      // Cuenta USA - bank/building
+      3: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#121211"/><path d="M16 6l-10 6h20z" fill="#e5e517"/><rect x="9" y="14" width="3" height="8" rx="0.5" fill="#e5e517"/><rect x="14.5" y="14" width="3" height="8" rx="0.5" fill="#e5e517"/><rect x="20" y="14" width="3" height="8" rx="0.5" fill="#e5e517"/><rect x="7" y="23" width="18" height="2.5" rx="1" fill="#e5e517"/></svg>'),
+      // Tarjeta - credit card
+      4: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#121211"/><rect x="5" y="9" width="22" height="14" rx="2.5" fill="none" stroke="#e5e517" stroke-width="2"/><line x1="5" y1="14" x2="27" y2="14" stroke="#e5e517" stroke-width="2.5"/><rect x="8" y="18" width="6" height="2" rx="1" fill="#e5e517"/></svg>'),
+      // Cripto - bitcoin symbol
+      5: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#121211"/><circle cx="16" cy="16" r="9" fill="none" stroke="#e5e517" stroke-width="2"/><text x="16" y="21" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="14" fill="#e5e517">₿</text></svg>'),
+      // Earn - coin/dollar growing
+      6: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#121211"/><circle cx="16" cy="18" r="7" fill="none" stroke="#e5e517" stroke-width="2"/><text x="16" y="22.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="12" fill="#e5e517">$</text><path d="M16 11V7m-3 2l3-3 3 3" stroke="#e5e517" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'),
     };
     const SPECIAL_BONUS = 50;
 
@@ -978,8 +1123,9 @@
       currentGameNumber = await SupabaseUtils.getGameCountToday(_username);
       rng = mulberry32(makeSeed(currentGameNumber));
 
-      // Refresh multiplier
+      // Refresh multiplier and update banner
       currentMultiplier = await SupabaseUtils.getMultiplier(_username);
+      updateRewardBanner();
 
       grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
       score = 0;
@@ -1503,6 +1649,24 @@
       setTimeout(() => p.remove(), 1100);
     }
 
+    async function updateRewardBanner() {
+      const banner = document.getElementById('rewardBanner');
+      const text = document.getElementById('rewardText');
+      try {
+        const boosts = await SupabaseUtils.getDailyBoosts(_username);
+        const allDone = boosts.question_correct && boosts.shared_link;
+        const someDone = boosts.question_correct || boosts.shared_link;
+        if (allDone || currentMultiplier > 1) {
+          banner.querySelector('.coin').textContent = '\u2B50';
+          text.innerHTML = 'Completa una fila o columna con bloques especiales y gana <strong>+50 puntos!</strong>';
+        } else if (someDone) {
+          text.innerHTML = 'Te falta un booster! Activa todos para obtener <strong>mas puntos!</strong>';
+        } else {
+          text.innerHTML = 'Activa los boosters en la pantalla principal para <strong>puntuar mas!</strong>';
+        }
+      } catch (e) {}
+    }
+
     function soundBonus() {
       try {
         const ctx = getAudioCtx();
@@ -1534,12 +1698,131 @@
       } catch (e) {}
     }
 
+    // ========== BACKGROUND MUSIC ==========
+    let bgMusicPlaying = false;
+    let bgMusicNodes = null;
+
+    function startBgMusic() {
+      if (bgMusicPlaying) return;
+      try {
+        const ctx = getAudioCtx();
+        const master = ctx.createGain();
+        master.gain.setValueAtTime(0.06, ctx.currentTime);
+        master.connect(ctx.destination);
+
+        // Ambient pad - warm low chord
+        const notes = [130.81, 164.81, 196.00, 261.63]; // C3, E3, G3, C4
+        const oscs = notes.map(freq => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          osc.connect(gain);
+          gain.connect(master);
+          osc.start();
+          return { osc, gain };
+        });
+
+        // Subtle LFO for movement
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        lfo.type = 'sine';
+        lfo.frequency.setValueAtTime(0.3, ctx.currentTime);
+        lfoGain.gain.setValueAtTime(3, ctx.currentTime);
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscs[0].osc.frequency);
+        lfo.start();
+
+        bgMusicNodes = { master, oscs, lfo, lfoGain, ctx };
+        bgMusicPlaying = true;
+      } catch (e) {}
+    }
+
+    function stopBgMusic() {
+      if (!bgMusicPlaying || !bgMusicNodes) return;
+      try {
+        const { master, oscs, lfo, lfoGain, ctx } = bgMusicNodes;
+        master.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1);
+        setTimeout(() => {
+          oscs.forEach(o => { try { o.osc.stop(); } catch(e){} });
+          try { lfo.stop(); } catch(e){}
+          bgMusicPlaying = false;
+          bgMusicNodes = null;
+        }, 1200);
+      } catch (e) {
+        bgMusicPlaying = false;
+        bgMusicNodes = null;
+      }
+    }
+
+    // ========== SCORE COUNTING SOUND ==========
+    function soundScoreCount(progress) {
+      // Rising pitch as score counts up (progress 0-1)
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        const freq = 400 + progress * 800;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.06);
+      } catch (e) {}
+    }
+
+    function soundBoosterReveal() {
+      try {
+        const ctx = getAudioCtx();
+        // Dramatic reveal sound
+        [800, 1000, 1200].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.06);
+          osc.stop(ctx.currentTime + i * 0.06 + 0.2);
+        });
+      } catch (e) {}
+    }
+
+    function soundScoreFinale() {
+      try {
+        const ctx = getAudioCtx();
+        const freqs = [523, 659, 784, 1047, 1319];
+        freqs.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = i < 3 ? 'sine' : 'triangle';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+          gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.08);
+          osc.stop(ctx.currentTime + i * 0.08 + 0.4);
+        });
+      } catch (e) {}
+    }
+
     // ========== GAME OVER ==========
     async function gameOver() {
+      stopBgMusic();
       vibrate([50, 100, 50]);
       soundGameOver();
       document.getElementById('finalScore').textContent = score.toLocaleString();
       document.getElementById('multiplierAnimation').style.display = 'none';
+      document.getElementById('multiplierLabel').textContent = '';
+      document.getElementById('multipliedScore').textContent = '';
+      document.getElementById('multipliedScore').className = '';
       document.getElementById('gameOverOverlay').classList.add('visible');
 
       const multiplier = currentMultiplier;
@@ -1579,40 +1862,120 @@
       if (multiplier > 1 && score > 0) {
         const boosts = await SupabaseUtils.getDailyBoosts(_username);
         const reasons = [];
-        if (boosts.question_correct) reasons.push({ icon: '\u{1F9E0}', text: 'Pregunta del dia correcta' });
-        if (boosts.shared_link) reasons.push({ icon: '\u{1F91D}', text: 'Link compartido con amigos' });
+        if (boosts.question_correct) reasons.push({ icon: '\u{1F9E0}', text: 'Pregunta del dia correcta', mult: 'x1.1' });
+        if (boosts.shared_link) reasons.push({ icon: '\u{1F91D}', text: 'Link compartido con amigos', mult: 'x1.1' });
 
         document.getElementById('multiplierAnimation').style.display = 'block';
         const reasonsEl = document.getElementById('boosterReasons');
         reasonsEl.innerHTML = '';
 
-        let delay = 500;
+        let delay = 600;
+
+        // Reveal each booster with dramatic animation
         reasons.forEach((r, i) => {
           setTimeout(() => {
             const div = document.createElement('div');
-            div.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;background:rgba(229,229,23,0.1);border:1px solid rgba(229,229,23,0.2);border-radius:8px;animation:fadeInUp 0.4s ease-out;';
-            div.innerHTML = `<span style="font-size:14px;">${r.icon}</span><span style="font-family:'Geist',sans-serif;font-size:12px;font-weight:600;color:var(--brand);">${r.text}</span><span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:12px;color:#1fcc4b;">x1.1</span>`;
+            div.className = 'booster-reason-card';
+            div.innerHTML = `<span class="booster-icon">${r.icon}</span><span class="booster-text">${r.text}</span><span class="booster-mult">${r.mult}</span>`;
             reasonsEl.appendChild(div);
-            if (navigator.vibrate) navigator.vibrate(15);
-          }, delay + i * 500);
+            soundBoosterReveal();
+            vibrate([20, 30, 40]);
+          }, delay + i * 700);
         });
 
+        // Show label + start counting
+        const countDelay = delay + reasons.length * 700 + 500;
         setTimeout(() => {
+          document.getElementById('multiplierLabel').textContent = 'PUNTAJE FINAL';
+          const scoreEl = document.getElementById('multipliedScore');
+          scoreEl.className = 'multiplied-score-counting';
+
           let current = score;
-          const step = Math.max(1, Math.floor((finalScore - score) / 30));
-          document.getElementById('multipliedScore').style.animation = 'fadeInUp 0.4s ease-out';
+          const totalSteps = 45;
+          const step = Math.max(1, Math.floor((finalScore - score) / totalSteps));
+          let stepCount = 0;
+
           const interval = setInterval(() => {
             current += step;
+            stepCount++;
+            const progress = Math.min(stepCount / totalSteps, 1);
+
             if (current >= finalScore) {
               current = finalScore;
               clearInterval(interval);
-              if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+              scoreEl.className = 'multiplied-score-done';
+              soundScoreFinale();
+              vibrate([30, 50, 30, 50, 60]);
+            } else {
+              soundScoreCount(progress);
             }
-            document.getElementById('multipliedScore').textContent = current.toLocaleString() + ' pts';
-          }, 30);
-        }, delay + reasons.length * 500 + 300);
+            scoreEl.textContent = current.toLocaleString() + ' pts';
+          }, 40);
+        }, countDelay);
       }
     }
+
+    // ========== RANKING POPUP ==========
+    async function showRankingPopup() {
+      const overlay = document.getElementById('rankingOverlay');
+      const listEl = document.getElementById('rankingPopupList');
+      listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-secondary);font-size:13px;">Cargando...</div>';
+      overlay.classList.add('visible');
+
+      try {
+        const prizes = ['10', '6', '4', '3', '2'];
+        const medals = ['\u{1F947}', '\u{1F948}', '\u{1F949}', '4\uFE0F\u20E3', '5\uFE0F\u20E3'];
+        const [top5, pos] = await Promise.all([
+          SupabaseUtils.getDailyLeaderboard(5),
+          SupabaseUtils.getDailyPosition(_username)
+        ]);
+
+        if (!top5 || top5.length === 0) {
+          listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-secondary);font-size:13px;">Nadie ha jugado hoy. Se el primero!</div>';
+          return;
+        }
+
+        let html = '';
+        for (let i = 0; i < 5; i++) {
+          const entry = top5[i];
+          const isMe = entry && _username && entry.username === _username.toLowerCase();
+          const isGold = i === 0;
+          if (entry) {
+            html += `<div class="go-top3-row${isMe ? ' me' : ''}${isGold ? ' gold' : ''}">
+              <span class="go-top3-rank">${medals[i]}</span>
+              <span class="go-top3-name">${entry.username}</span>
+              <span class="go-top3-pts">${Number(entry.final_score).toLocaleString()}</span>
+              <span style="font-size:11px;font-weight:700;color:#26a17b;font-family:'Archivo Narrow',sans-serif;margin-left:4px;">${prizes[i]} USDT</span>
+            </div>`;
+          } else {
+            html += `<div class="go-top3-row" style="opacity:0.3;">
+              <span class="go-top3-rank">${medals[i]}</span>
+              <span class="go-top3-name">---</span>
+              <span style="font-size:11px;font-weight:700;color:#26a17b;font-family:'Archivo Narrow',sans-serif;">${prizes[i]} USDT</span>
+            </div>`;
+          }
+        }
+
+        const inTop5 = top5.some(e => e && _username && e.username === _username.toLowerCase());
+        if (!inTop5 && pos && pos.rank) {
+          html += `<div style="text-align:center;padding:4px;color:var(--text-secondary);font-size:11px;letter-spacing:2px;">\u2022 \u2022 \u2022</div>`;
+          html += `<div class="go-top3-row me">
+            <span class="go-top3-rank" style="font-size:13px;font-weight:700;color:var(--brand);">#${pos.rank}</span>
+            <span class="go-top3-name">${_username}</span>
+            <span class="go-top3-pts">${Number(pos.score).toLocaleString()}</span>
+          </div>`;
+        }
+
+        listEl.innerHTML = html;
+      } catch (e) {
+        listEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-secondary);font-size:13px;">Error al cargar ranking</div>';
+      }
+    }
+
+    document.getElementById('leaderboardBtn').addEventListener('click', showRankingPopup);
+    document.getElementById('closeRankingBtn').addEventListener('click', () => {
+      document.getElementById('rankingOverlay').classList.remove('visible');
+    });
 
     // ========== EVENTS ==========
     document.getElementById('startBtn').addEventListener('click', () => {
@@ -1620,11 +1983,11 @@
       init();
     });
 
-    document.getElementById('newGameBtn').addEventListener('click', init);
-    document.getElementById('playAgainBtn').addEventListener('click', init);
+    document.getElementById('newGameBtn').addEventListener('click', showWelcomeScreen);
+    document.getElementById('playAgainBtn').addEventListener('click', showWelcomeScreen);
 
     document.getElementById('shareBtn').addEventListener('click', () => {
-      const text = `Hice ${score.toLocaleString()} puntos en Block Blast de El Dorado! Puedes superarme? \u{1F3C6}\u{1FA99}`;
+      const text = `Hice ${score.toLocaleString()} puntos en Bloques de Oro de El Dorado! Puedes superarme? \u{1F3C6}\u{1FA99}`;
       navigator.clipboard?.writeText(text).then(() => {
         const btn = document.getElementById('shareBtn');
         const orig = btn.textContent;
@@ -1639,6 +2002,54 @@
 
     // Prevent scroll/bounce on iOS
     document.addEventListener('touchmove', (e) => { if (draggingPiece) e.preventDefault(); }, { passive: false });
+
+    // ========== WELCOME LEADERBOARD ==========
+    const WELCOME_PRIZES = ['10', '6', '4', '3', '2'];
+    const WELCOME_MEDALS = ['\u{1F947}', '\u{1F948}', '\u{1F949}', '4\uFE0F\u20E3', '5\uFE0F\u20E3'];
+
+    async function loadWelcomeLeaderboard() {
+      const listEl = document.getElementById('welcomeLbList');
+      listEl.innerHTML = '<div class="welcome-lb-row skeleton"><span class="welcome-lb-rank">&nbsp;</span><span class="welcome-lb-name">&nbsp;</span><span class="welcome-lb-prize">&nbsp;</span></div>';
+      try {
+        const top5 = await SupabaseUtils.getDailyLeaderboard(5);
+        if (!top5 || top5.length === 0) {
+          listEl.innerHTML = '<div class="welcome-lb-empty">Ningún jugador aún hoy. Sé el primero!</div>';
+          return;
+        }
+        let html = '';
+        for (let i = 0; i < 5; i++) {
+          const entry = top5[i];
+          const isGold = i === 0;
+          if (entry) {
+            html += `<div class="welcome-lb-row${isGold ? ' gold' : ''}">
+              <span class="welcome-lb-rank">${WELCOME_MEDALS[i]}</span>
+              <span class="welcome-lb-name">${entry.username}</span>
+              <span class="welcome-lb-score">${Number(entry.final_score).toLocaleString()} pts</span>
+              <span class="welcome-lb-prize">${WELCOME_PRIZES[i]} USDT</span>
+            </div>`;
+          } else {
+            html += `<div class="welcome-lb-row" style="opacity:0.3;">
+              <span class="welcome-lb-rank">${WELCOME_MEDALS[i]}</span>
+              <span class="welcome-lb-name">---</span>
+              <span class="welcome-lb-prize">${WELCOME_PRIZES[i]} USDT</span>
+            </div>`;
+          }
+        }
+        listEl.innerHTML = html;
+      } catch (e) {
+        listEl.innerHTML = '<div class="welcome-lb-empty">No se pudo cargar el ranking</div>';
+      }
+    }
+
+    async function showWelcomeScreen() {
+      stopBgMusic();
+      await loadWelcomeLeaderboard();
+      document.getElementById('gameOverOverlay').classList.remove('visible');
+      document.getElementById('welcomeScreen').classList.remove('hidden');
+    }
+
+    // Load on page start
+    loadWelcomeLeaderboard();
 
     // Init scores display
     document.getElementById('bestScore').textContent = bestScore.toLocaleString();
